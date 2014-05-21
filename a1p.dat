@@ -1,0 +1,36 @@
+LIST
+LOSS 2
+DRAY 0
+DCAY 1
+CKOV 1
+C -- AUTO 1 ! Test local setting of STEMAX in ugeom.f OR 2/17/10
+AUTO 0
+CUTS  0.0001 0.001 0.01 0.01 0.01 0.001 0.001 0.001 0.001 0.01
+C -- BINS  61
+TIME  2=10.
+C -- TTYP=0 is UVa target, =1 is solid carbon target, no magnet  
+TTYP 0
+C -- FTYP=0 is field-code is bypassed, =1 field-code is used
+FTYP 1
+C -- Scattering Angle of BETA (degrees), +ve is counterclockwise
+THTE 40.0
+C -- angle of target field, +ve is clockwise (typically -80 or -180)
+THTB -80.0
+C -- beam energy [MeV] This variable was a parameter in sane.inc, in MeV!! (OR 11/06)
+EBEA 5900.0
+C -- Ammonia densities & PF
+HYDDENS 0.168
+HELDENS 0.053
+NITDENS 0.779
+EFFDENS 0.915
+PCKFRC 1.000
+C -- Carbon Disc Offset (NK 07/15/10)
+CDISCOFF 0.3
+C -- Target Vertex_z Offset (NK 05/18/10)
+TARGZOFF 0.15
+C -- Slow Raster Offsets; x y (NK 06/09/10)
+RASTOFF 0.000 0.000
+END
+STOP
+
+ 
