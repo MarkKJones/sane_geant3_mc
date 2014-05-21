@@ -1,0 +1,99 @@
+      subroutine radiated_xn(wsqtest,qsqtest,radval)
+c      subroutine radiated_xn(beame,wsqtest,qsqtest,radval)
+c
+c
+      implicit none
+      real radval
+      real*8 e,ep,theta,xbnuc,sigborn,sigrad_elas
+      real*8 sigrad_qe,sigrad_inel,t5,t6,t1
+      integer t2,t3,t4
+      real*8 Mp,Wsq,wsqtest,wtest,qsqtest,rad_xn,beame
+      integer i,j,wpt,q2pt,nfile
+c      parameter (wpt=20)
+c      parameter (q2pt=10)
+c      parameter (wpt=8)
+c      parameter (q2pt=16)
+c      real*8 w(wpt),q2(q2pt),sigrad_all(wpt,q2pt),corfac(wpt,q2pt)
+c      real*8 y2(wpt,q2pt)
+      real*8 w(12,20),q2(12,20),sigrad_all(12,20,20),corfac(12,20,20)
+      real*8 ysecder(12,20,20)
+      logical first
+      data first /.true./
+      common /radxn/ w,q2,sigrad_all,corfac,ysecder,first
+c
+      mp=0.93827
+
+      if (first) then
+c         write(*,*) wsqtest,qsqtest 
+         WRITE(*,*) ' READING IN THE RADIATED XN FILE'
+
+c      open(unit=21,file='extern.out')
+c        if(beame.ge.4.7.and.beame.le.4.8
+c     &     .and.wsqtest.ge.1.2*1.2.and.wsqtest.le.1.9*1.9
+c          if(wsqtest.ge.1.2*1.2.and.wsqtest.le.1.9*1.9)
+c     &     .and.qsqtest.ge.3.5.and.qsqtest.le.5.0)
+c     &     open(unit=21,file='extern_H2_4.73_W1.2-1.9_Q23.5-5.0.out')
+
+      do nfile=1,2 !!Loop over files
+         write(*,*) 'nfile = ',nfile
+         if(nfile.eq.1)then
+            wpt=8
+            q2pt=16 
+         endif
+         if(nfile.eq.2)then
+            wpt=13
+            q2pt=9 
+         endif
+
+       if(nfile.eq.1) 
+     &    open(unit=21,file='extern_H2_4.73_W1.2-1.9_Q23.5-5.0.out')
+       if(nfile.eq.2) 
+     &    open(unit=21,file='extern_H2_4.73_W1.2-2.4_Q22.7-3.5.out')
+c$$$      open(unit=21,file='extern_H2_4.73_W1.2-1.9_Q23.5-5.0.out')
+c$$$       read(21,*) wpt 
+c$$$       read(21,*) q2pt 
+c$$$      open(unit=22,file='extern_H2_4.73_W1.2-2.4_Q22.7-3.5.out')
+
+       do i=1,wpt
+        do j=1,q2pt
+         write(*,*)i,j
+         read(21,'(1x,f7.3,f7.4,f7.3,2f7.4,6e11.4,3i3,2e11.4)') 
+     &            e,ep,theta,xbnuc,q2(nfile,j),sigborn,
+     &            sigrad_all(nfile,i,j),
+     &            sigrad_elas,sigrad_qe,sigrad_inel,t1,t2,t3,t4,t5,t6
+c         write(*,*) 
+c     &            e,ep,theta,xbnuc,q2(nfile,j),sigborn,
+c     &            sigrad_all(nfile,i,j)!,
+c     &            sigrad_elas,sigrad_qe,sigrad_inel,t1,t2,t3,t4,t5,t6
+        Wsq = Mp**2 + 2d0*Mp*(e-ep) - q2(nfile,j)
+c        write(*,*) e,ep,theta,q2(1,j),q2(2,j),wsq
+         if(Wsq.gt.0) then
+          W(nfile,i) = sqrt(Wsq)
+         else
+          write(*,*) ' problem with W2 = ',Wsq
+          stop
+         endif
+c$$$         if(sigrad_all(i,j).NE.0) then           
+c$$$           corfac(i,j) = sigborn/sigrad_all(nfile,i,j) 
+c$$$         endif
+c       write(*,*) w(nfile,i),wsq,q2(nfile,j),sigrad_all(nfile,i,j)
+        enddo !q2pt
+       enddo !wpt   
+
+      enddo ! End looping over files
+c       write(*,*) w(nfile,i),wsq,q2(nfile,j),sigrad_all(nfile,i,j)
+
+       FIRST=.FALSE.      
+c  calc 2nd derivative in y2. Call only once.
+c       call splie2(w,q2,sigrad_all,wpt,q2pt,y2)     
+c       write(*,*) w,q2,sigrad_all,wpt,q2pt 
+       call splie2(w,q2,sigrad_all,wpt,q2pt,ysecder)     
+      endif
+C
+      wtest=sqrt(wsqtest)
+      call splin2(w,q2,sigrad_all,ysecder,wpt,q2pt,wtest,qsqtest,rad_xn)
+      radval=rad_xn
+
+
+      return
+      end

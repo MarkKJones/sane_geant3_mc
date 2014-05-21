@@ -1,0 +1,52 @@
+      subroutine radiated_xn(wsqtest,qsqtest,radval)
+c
+c
+      implicit none
+      real radval
+      real*8 e,ep,theta,xbnuc,sigborn,sigrad_elas
+      real*8 sigrad_qe,sigrad_inel,t5,t6,t1
+      integer t2,t3,t4
+      real*8 Mp,Wsq,wsqtest,wtest,qsqtest,rad_xn
+      integer i,j,wpt,q2pt
+      parameter (wpt=20)
+      parameter (q2pt=10)
+      real*8 w(wpt),q2(q2pt),sigrad_all(wpt,q2pt),corfac(wpt,q2pt)
+      real*8 y2(wpt,q2pt)
+      logical first
+      data first /.true./
+      common /radxn/ w,q2,sigrad_all,corfac,y2,first
+c
+      mp=0.93827
+      if (first) then
+         WRITE(*,*) ' READING IN THE RADIATED XN FILE'
+      open(unit=21,file='extern.out')
+       do i=1,wpt
+        do j=1,q2pt
+         read(21,'(1x,f7.3,f7.4,f7.3,2f7.4,6e11.4,3i3,2e11.4)') 
+     &            e,ep,theta,xbnuc,q2(j),sigborn,sigrad_all(i,j),
+     &            sigrad_elas,sigrad_qe,sigrad_inel,t1,t2,t3,t4,t5,t6
+c         write(*,*) 
+c     &            e,ep,theta,xbnuc,q2(j),sigborn,sigrad_all(i,j),
+c     &            sigrad_elas,sigrad_qe,sigrad_inel,t1,t2,t3,t4,t5,t6
+        Wsq = Mp**2 + 2d0*Mp*(e-ep) - q2(j)
+         if(Wsq.gt.0) then
+          W(i) = sqrt(Wsq)
+         else
+          write(*,*) ' problem with W2 = ',Wsq
+          stop
+         endif
+         if(sigrad_all(i,j).NE.0) then           
+           corfac(i,j) = sigborn/sigrad_all(i,j) 
+         endif
+       enddo
+       enddo    
+       FIRST=.FALSE.      
+c  calc 2nd derivative in y2. Call only once.
+       call splie2(w,q2,sigrad_all,wpt,q2pt,y2)     
+      endif
+C
+      wtest=sqrt(wsqtest)
+      call splin2(w,q2,sigrad_all,y2,wpt,q2pt,wtest,qsqtest,rad_xn)
+      radval=rad_xn
+      return
+      end

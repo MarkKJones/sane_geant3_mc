@@ -1,0 +1,36 @@
+Updated Makefile to hardwire CERNLIB to /site/cernlib/i386_rhel5/2005/lib
+Modify lucitehodo.f
+     CALL GSPOS('HODO',1,'EARM',0.,0.,-424.+240.,  7,'ONLY')      
+
+to
+
+     CALL GSPOS('HODO',1,'EARM',0.,0.,-237.5+240.,  7,'ONLY') 
+
+   
+gukine.f 
+
+     VERTEX(3) = uu(3)-182.5
+
+to
+
+     VERTEX(3) = uu(3)-237.5
+ 
+forwardtracker.f
+
+      CALL GSPOS('FTX1',1,'EARM',0,0,-182.+52.,0,'ONLY')
+      CALL GSPOS('FTY1',1,'EARM',0,0,-182.+52.+0.3,0,'ONLY')   
+      CALL GSPOS('FTY2',1,'EARM',0,0-0.15,-182.+52.+0.3*2.,0,'ONLY')
+to
+
+      CALL GSPOS('FTX1',1,'EARM',0,0,-237.5+52.,0,'ONLY')
+      CALL GSPOS('FTY1',1,'EARM',0,0,-237.5+52.+0.3,0,'ONLY')   
+      CALL GSPOS('FTY2',1,'EARM',0,0-0.15,-237.5+52.+0.3*2.,0,'ONLY')
+
+guout.f sets to output to ntuple with following cut:
+         if(nclust.gt.0.and.abs(ph-90).lt.90.and.
+     ,        abs(ph-phi_test).lt.0.01.and. cer_h(1).gt.0.and.
+     ,        xsn.gt.0.and.cwn_E_r(1).gt.0.7)then
+
+cer_h is the number of photo-electrons in cerenkov that
+  geometrically match BigCal.
+
