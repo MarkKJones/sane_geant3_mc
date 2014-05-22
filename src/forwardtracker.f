@@ -71,23 +71,23 @@ c
       PAR(1) = 10.95
       PAR(2) = 19.2
       PAR(3) = 0.15
-c      CALL GSVOLU( 'FTX1' , 'BOX ' , NMED_Fx1, PAR , 3 , IVOL ) 
-      CALL GSVOLU( 'FTX1' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL ) 
+      CALL GSVOLU( 'FTX1' , 'BOX ' , NMED_Fx1, PAR , 3 , IVOL ) 
+c      CALL GSVOLU( 'FTX1' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL ) 
 c      vol_ftx1 = ivol
 
       PAR(1) = 11.
       PAR(2) = 19.2
       PAR(3) = 0.15
-c      CALL GSVOLU( 'FTY1' , 'BOX ' , NMED_Fy1, PAR , 3 , IVOL )
-      CALL GSVOLU( 'FTY1' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL )
+      CALL GSVOLU( 'FTY1' , 'BOX ' , NMED_Fy1, PAR , 3 , IVOL )
+c      CALL GSVOLU( 'FTY1' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL )
 c      vol_fty1 = ivol
 
       
       PAR(1) = 11.
       PAR(2) = 19.35
       PAR(3) = 0.15
-c      CALL GSVOLU( 'FTY2' , 'BOX ' , NMED_Fy2, PAR , 3 , IVOL ) 
-      CALL GSVOLU( 'FTY2' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL ) 
+      CALL GSVOLU( 'FTY2' , 'BOX ' , NMED_Fy2, PAR , 3 , IVOL ) 
+c      CALL GSVOLU( 'FTY2' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL ) 
 c      vol_fty2 = ivol
 c
 c     Position Volume traker into detector

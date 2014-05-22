@@ -39,10 +39,16 @@ c      parameter (phi_min   = 20.0d0 )
 c      parameter (phi_max   = 160.d0 )
 
 ccc   Electron setting
-      parameter (theta_min =  25.00d0 )
-      parameter (theta_max =  60.00d0 )
-      parameter (phi_min   = 20.0d0 )
-      parameter (phi_max   = 140.d0 )
+c      parameter (theta_min =  25.00d0 )
+c      parameter (theta_max =  60.00d0 )
+c      parameter (phi_min   = 20.0d0 )
+c      parameter (phi_max   = 140.d0 )
+ccmkj
+      parameter (theta_min =  30.00d0 )
+      parameter (theta_max =  45.00d0 )
+      parameter (phi_min   = 60.0d0 )
+      parameter (phi_max   = 100.d0 )
+
 
 C-- For theta_Bfield = -180
 C--      parameter (p_min     =   0.d0)

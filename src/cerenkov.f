@@ -20,6 +20,7 @@
       cer_h(iclust)=0
       predicted_x = cwn_x_ur(iclust)
       predicted_y = cwn_y_ur(iclust)
+c      write(*,*) ' cergood = ',cwn_cergood
       do i=1,cwn_cergood
          do cer_n=1,8
          if(predicted_y.gt.(CER_SANE_GEOM_CUT_LOW(cer_n)*4-1)-120..and.

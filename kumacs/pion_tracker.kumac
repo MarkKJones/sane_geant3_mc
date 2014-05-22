@@ -1,0 +1,77 @@
+Macro pion_tracker
+hi/del *
+txt=run[nrun]
+
+*to run this kumac in PAW do 'exec pion_tracker nrun=run# nrun2=run#'
+*
+ dir1=..
+ dir2=..
+ chain -track
+ chain -notrack
+  do nrun=200,200
+ chain track [dir1]/a1p_geant.[nrun].5.hbook
+ enddo
+  do nrun=100,100
+ chain notrack [dir2]/a1p_geant.[nrun].5.hbook
+ enddo
+
+
+ zone 2 2
+ opt stat
+ opt date 3
+
+ 1d 104  'nclust track' 10 0 10
+ 1d 204  'nclust Tracker OUT ' 10 0 10
+ 1d 107  'cer_h track' 100 0 500
+ 1d 207  'cer_h Tracker OUT ' 100 0 500
+ 1d 105  'Theta Tracker IN' 50 0 100
+ 1d 205  'theta Tracker OUT ' 50 0 100
+ 1d 106  'phi Tracker IN' 50 0 200
+ 1d 206  'phi Tracker OUT' 50 0 200
+ 1d 100 'One cluster event Tracker IN' 100 0 3
+ 1d 101 'Two cluster event Tracker IN' 100 0 3
+ 1d 102 'Two cluster event Tracker IN' 100 0 3
+ 1d 200 'One cluster event Tracker OUT' 100 0 3
+ 1d 201 'Two cluster event Tracker OUT' 100 0 3
+ 1d 202 'Two cluster event Tracker OUT' 100 0 3
+ htype=1
+ cd //track
+ ntuple/loop //track/10 pion_tracker.f(100)
+ cd //notrack
+ htype=2
+ ntuple/loop //notrack/10 pion_tracker.f(200)
+
+ set hcol 2
+ zone 2 6
+ hi/pl 107
+ hi/pl 207
+ hi/pl 104
+ ncltr=$HINFO(104,'sum')
+vec/creat x(10)
+hi/get_vect/contents 104 x
+vec/print x
+ hi/pl 204
+ nclntr=$HINFO(204,'sum')
+hi/pl 105
+ ncltr=$HINFO(105,'sum')
+ hi/pl 205
+ nclntr=$HINFO(205,'sum')
+hi/pl 106
+ ncltr=$HINFO(106,'sum')
+ hi/pl 206
+ nclntr=$HINFO(206,'sum')
+ 
+ hi/pl 101 
+ tgsumtr=$HINFO(101,'sum')
+ hi/pl 100 
+ ogsumtr=$HINFO(100,'sum')
+ hi/pl 201
+ tgsumntr=$HINFO(201,'sum')
+ hi/pl 200 
+ ogsumntr=$HINFO(200,'sum')
+ rat=[tgsumtr]/[tgsumntr]
+ rat2=[ogsumtr]/[ogsumntr]
+ mess Tracker evetns = [ncltr]   No tracker events = [nclntr] 
+ mess Two cluster tracker IN = [tgsumtr]  Tracker OUT = [tgsumntr] rat = [rat]
+ mess One cluster tracker IN = [ogsumtr]  Tracker OUT = [ogsumntr] rat = [rat2]
+

@@ -102,7 +102,7 @@ C======================================================================
       Y1 = YP + VP/WP*(z1-ZP)
 
 * Test to see if Cerenkov photon hits back wall of Cerenkov Box
-
+c      write(*,*) ' ltrace = ',abs(x1),cer_back_width/2.,abs(y1),cer_back_height/2.
       if (abs(x1).lt.cer_back_width/2. .and.abs(y1).lt.cer_back_height/2.) then
         straight_xp = x1/(cer_drift+cer_length)
         straight_yp = y1/(cer_drift+cer_length)
@@ -113,7 +113,7 @@ C======================================================================
           cwn_cg_y(cwn_cergood) = y1
  1        cwn_cg_xp(cwn_cergood) = up/wp-straight_xp
           cwn_cg_yp(cwn_cergood) = vp/wp-straight_yp
-*          write(*,*) cwn_cergood,cwn_cg_x(cwn_cergood),cwn_cg_y(cwn_cergood),cwn_cg_xp(cwn_cergood),cwn_cg_yp(cwn_cergood)
+c          write(*,*) ' cer good = ',cwn_cergood,cwn_cg_x(cwn_cergood),cwn_cg_y(cwn_cergood),cwn_cg_xp(cwn_cergood),cwn_cg_yp(cwn_cergood)
           npe=1
         endif
       endif

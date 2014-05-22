@@ -137,8 +137,8 @@ c            write(*,*)'elec',E0,E,tht_scat*180./3.14159,phi_scat-90,W1,W2,SIGEL
      +           ,deltaomega_scat,deltaE_scat)
 c            rl = (0.0515/2.) * 100.
 c            rl = (0.025+0.05/2.) * 100.
-c            rl = (0.0464/2.) * 100.
-            rl = (0.01) * 100.
+            rl = (0.0464/2.) * 100.
+c            rl = (0.01) * 100.
             th_deg=tht_scat*180./3.14159!-20
             tht_scat=tht_scat!-20*3.14159/180.
 c

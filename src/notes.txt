@@ -26,6 +26,9 @@ to
       CALL GSPOS('FTY1',1,'EARM',0,0,-237.5+52.+0.3,0,'ONLY')   
       CALL GSPOS('FTY2',1,'EARM',0,0-0.15,-237.5+52.+0.3*2.,0,'ONLY')
 
+also forward tracker
+
+
 guout.f sets to output to ntuple with following cut:
          if(nclust.gt.0.and.abs(ph-90).lt.90.and.
      ,        abs(ph-phi_test).lt.0.01.and. cer_h(1).gt.0.and.
@@ -33,4 +36,5 @@ guout.f sets to output to ntuple with following cut:
 
 cer_h is the number of photo-electrons in cerenkov that
   geometrically match BigCal.
+
 

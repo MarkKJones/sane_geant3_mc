@@ -22,6 +22,7 @@ C.
       include 'sane_cwn.inc' 
       save
       integer*2 i,npesum
+      integer mkj
       integer ihhit
       integer ig,ip
       character*4 chcase
@@ -30,7 +31,6 @@ C
 C Ngkin is > 0 if secondary particle have been generated,
 C store them to the particle stak
 C
-
 
 *      if (lvolum(nlevel).ge.9.and.lvolum(nlevel).le.18.and.ipart.ge.2.and.ipart.le.3.and.getot.lt.0.010) then
 *        istop=2
@@ -109,7 +109,7 @@ c
 c     Check tracker and Lucite
 c
          
-c         call step_tracker()
+         call step_tracker()
          call step_lucite()
        
       endif
@@ -157,10 +157,16 @@ C        write(*,*) 'gustep :',number(nlevel),number(nlevel-1),destep
 
 *        write(*,'("ELOSS: ",i3,7f6.1)') lvolum(nlevel),(Eloss(i)*1000.,i=1,6),destep*1000.
       endif
-
+c      if ( ipart .eq. 3 .and. lvolum(nlevel).eq.vol_cgas) then
+c      write(*,*) ' vol_cgas = ',lvolum(nlevel),vol_cgas,ngphot,ipart,getot
+c      read(*,*) mkj
+c      endif
+c      if (lvolum(nlevel).eq. 35 .or. lvolum(nlevel).eq. 34 .or. lvolum(nlevel).eq. 33) then
+c         write(*,*) ' tracker destep = ',destep,lvolum(nlevel),ipart,getot
+c         endif
       if (lvolum(nlevel).eq.vol_cgas.and.ngphot.gt.0) then
         photCer = photCer + ngphot
-C        write(*,*) 'Cerenkov photons:',ngphot
+c        write(*,*) 'call ltrace Cerenkov photons:',ngphot
         call ltrace(npesum)
         photGood = photGood + npesum
 *        write(*,'("vect = ",7f10.4)') vect
