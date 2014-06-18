@@ -37,6 +37,7 @@ C
       normrate = 0.d0
       cwn_xsn = 0.d0
       cwn_xsnr = 0.d0
+      cwn_xsnscal = 0.d0
 
       call vzero(gc_x,tot_gc)
       call vzero(gc_y,tot_gc)

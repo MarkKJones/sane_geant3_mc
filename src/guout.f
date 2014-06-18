@@ -110,7 +110,7 @@ c      write(*,*)z(tgt_num),n(tgt_num)
       cwn_z    = z(tgt_num)
       cwn_n    = n(tgt_num)
       cwn_xsn  = xsn
-c      write(*,*)ratrad
+      cwn_xsnscal=xsnscal
       if(ratrad.eq.ratrad)then
          cwn_xsnr  = ratrad
       else

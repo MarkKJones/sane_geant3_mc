@@ -58,6 +58,7 @@ c     ,     //'ixmax[1,32]:I,iymax[1,56]:I,eyx(5,5):R')
      1          //',p:R'
      1          //',xsn:R'
      1          //',ratrad:R'
+     1          //',xsnscal:R'
      1          //',asym:R'
      1          //',tht:R'
      1          //',phi:R'

@@ -1,4 +1,5 @@
-      real*8 function epc_func(EBEAM,Z1,N1,FERMI1,MPI,PART,SCAL1,P,THP,rad_l)
+      real*8 function epc_func(EBEAM,Z1,N1,FERMI1,MPI,PART,SCAL1,P,THP,
+     + rad_l,USEFIT1)
 
 CGAW      PROGRAM EPC
 
@@ -11,10 +12,14 @@ C  TRANSVERSE SCALING REGION ADDED
 
 C 	Modified by OARA to plot like older EPC's
 C       Modified slightly by Glen Warren to compile under Linux (g77) Sept. 02
+C     Modified by Jixie Zhang:  
+C     IN S2PI(), add angle correction to wise result
+C     add flag USEFIT to tell whether to use scaling fit result or not
+     
 
       IMPLICIT REAL*8 (A-H,O-Z) 
       REAL*8 MP,MPI0,MN
-      CHARACTER*1 MPI,SCAL,FERMI,FERMI1,SCAL1
+      CHARACTER*1 MPI,SCAL,FERMI,FERMI1,SCAL1,USEFIT1,USEFIT
       CHARACTER*3 PART
 
       COMMON/SG/IA
@@ -24,8 +29,8 @@ C       Modified slightly by Glen Warren to compile under Linux (g77) Sept. 02
       COMMON/M/Z,N
       COMMON/KF/E1
       DATA AM/938.28/,AMP/139.6/,MPI0/135.9/,MN/939.56/
-      real*8 pionwiser,piondelta
-      common/PIONDELTA/pionwiser,piondelta
+      real*8 pionwiser,piondelta,epc_xn
+      common/PIONDELTA/pionwiser,piondelta,epc_xn
 
 c      write(*,*)EBEAM,Z1,N1,FERMI1,MPI,PART,P,THP
 
@@ -35,6 +40,8 @@ c      SCAL  = 'Y'
       Z     = Z1
       N     = N1
       E1    = EBEAM
+c      USEFIT = 'Y'
+      USEFIT = USEFIT1
 
       PI=ACOS(-1.0D0)
       IA=Z+N
@@ -117,49 +124,60 @@ c      write(*,*)'Called Delta_Or with ',E1,TP,TH,D2DEL
         D2DEL=AN*D2DEL*AJ
       END IF
       endif
+c comment added by Jixie, discussed with Oscar Rondon
+c D2SC1 is the cross section for production at the single pion threshold,
+c and D2SC2 is for production at the two pion threshold
+c By charge conservation pi+ are produced on protons at the single pion
+c threshold, but at the two pion threshold on neutrons, and vice versa for
+c pi-. But pi0's are always produced at the single pion threshold.
+c therefore for PI0, D2SC=IA*D2SC1, not IA*D2SC1+D2SC2)/2
 
       D2SC = 0.d0
       IF(MPI.EQ.'Y') THEN
         IF(ABS(IP).EQ.2.OR.IP.EQ.0)THEN
-          CALL S2PI(2,E1,TP,TH,D2SC1) 
-          CALL S2PI(-2,E1,TP,TH,D2SC2) 
+          CALL S2PI(2,E1,TP,TH,D2SC1,USEFIT) 
+          CALL S2PI(-2,E1,TP,TH,D2SC2,USEFIT) 
           IF(PART.EQ.'PI+')THEN 
             D2SC=Z*D2SC1+N*D2SC2 
           ELSEIF(PART.EQ.'PI-')THEN 
             D2SC=N*D2SC1+Z*D2SC2 
           ELSEIF(PART.EQ.'PI0')THEN 
-            D2SC=IA*(D2SC1+D2SC2)/2.
+c             write(*,*) ' d2sc = ',ia,D2SC1 
+            D2SC=IA*D2SC1
 c            write(*,*)'PI=-',D2SC1*rad_l/100.*P,D2SC2*rad_l/100.*P
           ELSE
             CALL EXIT
           ENDIF 
         ELSEIF(ABS(IP).EQ.1)THEN 
-          CALL S2PI(1,E1,TP,TH,D2SC1) 
+          CALL S2PI(1,E1,TP,TH,D2SC1,USEFIT) 
           D2SC=IA*D2SC1 
        ENDIF
       END IF
 
       TOTAL=D2QD+D2QF+D2DEL+D2SC
-
       IF(SCAL.EQ.'Y') THEN
         TOTALE=TOTAL*P*1.0D-6
       ELSE
         TOTALE=TOTAL/AJ 
       END IF
-c      write(*,*)D2QD+D2QF+D2DEL+D2SC
+c      write(*,*) ' d2= ',D2QD,D2QF,D2DEL,D2SC,aj
+c      write(*,*)D2QD+D2QF+D2DEL+D2SC,AJ
 c      epc_func = total*1.d6   ! nanobarns / GeV/c / sr
       if(SCAL.eq.'Y')then
          epc_func = D2SC*P  ! nanobarns / GeV/c / sr
+         epc_xn= epc_func
          pionwiser=D2SC*rad_l/100.*P/1.3 
          piondelta=(D2DEL)*rad_l/100.*P
 c         write(*,*)P,thp
       else
          epc_func = D2SC*1.d6/AJ   ! nanobarns / GeV/c / sr
+         epc_xn= epc_func
          pionwiser=D2SC*1.d6/AJ/1.3  
          piondelta=(D2DEL)*1.d6/AJ
 c         write(*,*)Aj
          
       endif
+c      write(*,*) ' pion wiser = ',p,p*p/E,pionwiser
 c      write(18,*)E,TH,D2SC*1.d6,D2DEL*1.d6
       return
       END 
@@ -767,11 +785,13 @@ C  BEGIN 16-O
       RETURN
       END 
 *S2PI 
-      SUBROUTINE S2PI(IP,E1,TP,TH,D2SC) 
+*USEFIT='Y' will use scaling fit result other than wiser
+      SUBROUTINE S2PI(IP,E1,TP,TH,D2SC,USEFIT) 
 C  INTEGRAL OVER SCALING CROSS SECTION
       IMPLICIT REAL*8 (A-H,O-Z) 
       CHARACTER*1 SCAL,FERMI
  	COMMON /FER/ FERMI,SCAL
+      CHARACTER*1 USEFIT
       DATA AM/939./,AMP/139./ 
       IF(ABS(IP).EQ.1)THEN
 C  ONE PION THR 
@@ -806,18 +826,28 @@ C  TWO PION THR
       SUMBR=0.0D0
 !      DO 1 I=1,20 
       DO I=1,20 
-      W=THR+(FLOAT(I)-.5D0)*DW
-	IF(W.LT.(E1-0.511)) THEN
-      CALL VTP_OR(AM,AMP,E1,W,TP,TH,GN)
-!	WRITE(*,100) I,AM,AMP,E1,W,DW,THR,GN
+        W=THR+(FLOAT(I)-.5D0)*DW
+        IF(W.LT.(E1-0.511)) THEN
+          CALL VTP_OR(AM,AMP,E1,W,TP,TH,GN)
+!	  WRITE(*,100) I,AM,AMP,E1,W,DW,THR,GN
 100	FORMAT(I4,2F8.1,5G12.3)
-	CALL WISER(W/1.E3,P/1.E3,TH,F)
-
-!	PRINT *,'P,W,GN,F',P,W,GN,F
-      SUM=SUM+GN*F*DW 
-	SUMBR = SUMBR + F*DW/W
+! By Jixie: Add flag to use scalingfit
+! also modified wiser's result with  0.171 * 0.53 * TH**2 
+! check https://hallcweb.jlab.org/experiments/sane/wiki/\
+! index.php/Inclusive_pion_and_nucleon_electroproduction for details
+          IF (USEFIT.EQ.'Y')THEN
+             CALL SCALINGFIT(P/1.E3,TH,F)
+             f = f/12.
+          ELSE
+             CALL WISER(W/1.E3,P/1.E3,TH,F)
+!             F = F * 0.171 * 0.53 * TH**2 ;
+          END IF
+!	  PRINT *,'P,W,GN,F',P,W,GN,F
+          SUM=SUM+GN*F*DW 
+	  SUMBR = SUMBR + F*DW/W
+c             write(*,*) ' scal fit = ',P,TH,F,sumbr
 !    1 CONTINUE
-	END IF
+        END IF
       END DO
 	IF(SCAL.EQ.'Y') THEN
 	D2SC=SUMBR
@@ -826,7 +856,7 @@ C  TWO PION THR
 c        write(*,*)'W',Sum,CPF,D2SC*CPF*1.E+6
 	END IF
 	D2SC = D2SC*CPF
-!	PRINT *,'D2PI',D2SC,CPF
+c	write(*,*)'D2PI',D2SC,CPF
       RETURN
     2 D2SC=0. 
       RETURN
@@ -1041,3 +1071,10 @@ C  ENERGY
 	RETURN
 	END
 
+*SCALEFIT
+	SUBROUTINE SCALINGFIT(P,TH,F)
+        REAL*8 P,TH,F
+        F = 11150*EXP(-8.67*P*SIN(TH))
+c        PRINT *, 'P,TH,F',P,TH,p*sin(th),F
+        RETURN
+        END

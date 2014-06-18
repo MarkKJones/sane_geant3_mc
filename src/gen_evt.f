@@ -21,7 +21,7 @@
       real*8 E,Ef,temp_ran
       logical*1 check_accp
       real*8 tht_scat,phi_scat,deltaomega_scat,deltaE_scat
-      real*8 cross_section,calc_asym
+      real*8 cross_section,calc_asym,get_xsnscal
       real*8 f1,f2,q2,wsq,nu,r,xb
       real*4 rate_norm(4)
       real*4 q2ce,beame,eplo,epce,ephi,xblo,xbce,xbhi,wlo,wce,whi
@@ -41,8 +41,8 @@
       integer ipos
       real*8 stots,sdelta,spion
       real*8 epc_func,z1,n1,ppp
-      real*8 pionwiser,piondelta
-      common/PIONDELTA/pionwiser,piondelta
+      real*8 pionwiser,piondelta,epc_xn
+      common/PIONDELTA/pionwiser,piondelta,epc_xn
       real p1,p2,p3,th_d,radh2,xsnh2
 
 C Now cycle through events
@@ -139,8 +139,7 @@ c            rl = (0.0515/2.) * 100.
 c            rl = (0.025+0.05/2.) * 100.
             rl = (0.0464/2.) * 100.
 c            rl = (0.01) * 100.
-            th_deg=tht_scat*180./3.14159!-20
-            tht_scat=tht_scat!-20*3.14159/180.
+            th_deg=tht_scat*180./3.14159
 c
 c     PETERS WISER CODE
 cc
@@ -162,22 +161,20 @@ c            write(*,*)SIGPIM,(sigpip + sigpim)/2.
             xsn=0
 c            Ppp=500
 c            th_deg=52
-            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl)
-            xsn=pionwiser* 2.*3.14159 *
-     >           sin(tht_scat)
-c            if(piondelta.gt.0)then
-c               write(28,*)3,ppp,th_deg,pionwiser,piondelta
-c            endif
-            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl)
-c            if(piondelta.gt.0)then
-c            write(28,*)7,ppp,th_deg,pionwiser,piondelta
-c            write(*,*)
-c            endif
-c            xsn=xsn+pionwiser
-            ratrad=pionwiser* 2.*3.14159 *
-     >           sin(tht_scat)
-c            write(*,*)8,(sigpip + sigpim)/2.,xsn,xsn*2/((sigpip + sigpim))
-
+c xsn is  pi0 xsn with Wiser's fit 
+            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'N')
+            xsn=epc_xn
+c            write(*,*) ' scal N  xsn = ',epc_xn*(zz_t+nn_t)
+            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'N')
+            xsn=(xsn+epc_xn)* 2.*3.14159 *sin(tht_scat)*(zz_t+nn_t)
+c            write(*,*) ' scal Y  xsn = ',epc_xn*(zz_t+nn_t)
+c ratrad is pi0 xsn with Oscar's fit
+            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'Y')
+            xsnscal=epc_xn
+c            write(*,*) 'OR  scal N  xsn = ',epc_xn*(zz_t+nn_t)
+            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'Y')
+            xsnscal=(xsnscal+epc_xn)* 2.*3.14159 *sin(tht_scat)*(zz_t+nn_t)
+c            write(*,*) 'OR  scal Y  xsn = ',epc_xn*(zz_t+nn_t)
 
             pp = sqrt(E**2-mass(ivpart)**2)
             th = tht_scat
