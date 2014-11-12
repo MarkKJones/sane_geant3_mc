@@ -34,15 +34,13 @@ c      real*8 function cross_section(zz,nn,u_vertex,part,f1,f2,q2,wsq,r)
       aa = zz + nn
 
       if (part.eq.1) then
-CC F1F209 returns the F1 and F2 per nucleus(not per nucleon); do not need to multiply by aa.
-c        cross_section = aa*mrst_xsn(zz,aa,E_beam/1000.d0,
+C mrst_xsn has been modified to return XS per nucleus(not per nucleon); 
+C do not need to multiply by aa.  Jixie Zhang
         cross_section = mrst_xsn(zz,aa,E_beam/1000.d0,        
-cc     ,        mom/1000.d0,tht*d2r,f1,f2)
-c     ,        mom/1000.d0,tht*d2r,f1,f2,q2,wsq)
      ,        mom/1000.d0,tht*d2r,f1,f2,q2,wsq,r)
       elseif (part.eq.2) then
         cross_section = pos_slac(E_beam/1000.d0,tht,mom/1000.d0,5.4d0) *
-     1        aa*mrst_xsn(zz,aa,E_beam/1000.d0,mom/1000.d0,tht*d2r,f1,f2)
+     1        mrst_xsn(zz,aa,E_beam/1000.d0,mom/1000.d0,tht*d2r,f1,f2)
       elseif (part.ge.3 .and. part.le.5) then
         cross_section = aa*wiser_func(part_id(part),E_beam,mom,tht)
       elseif (part.ge.6 .and. part.le.7) then 
@@ -53,7 +51,6 @@ c     ,        mom/1000.d0,tht*d2r,f1,f2,q2,wsq)
          else
             fermi = 'N'
          endif
-
          cross_section = epc_func(E_beam,float(zz),nn,fermi,mpi,
      1        part_id(part),mom,tht)
       else
@@ -61,15 +58,6 @@ c     ,        mom/1000.d0,tht*d2r,f1,f2,q2,wsq)
         cross_section = -1.d0	! To be consistent with mrst-xsn  OR 3/15/10
       endif
 
-!      if(cross_section.le.0.d0) cross_section = 1.d0 ! OR 3/15/10
-
       return
       end
-
-
-
-
-
-
-
 

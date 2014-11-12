@@ -1,3 +1,5 @@
+c By Jixie: this routine return the cross section for the whole
+c nucleus, use mrst if x<0.3 otherwise use Bosted's model
 
 cc      real*4 function mrst_xsn(Z,A,E,Ep,theta,f1,f2)
 c      real*4 function mrst_xsn(Z,A,E,Ep,theta,f1,f2,q2,w2)
@@ -31,45 +33,31 @@ c      real*4 function mrst_xsn(Z,A,E,Ep,theta,f1,f2,q2,w2)
       x = Q2/2.d0/Mp/(E-Ep)
       W2 = 2.d0*Mp*(E-Ep) + Mp**2 - Q2
 
-CCCC Include elastic for Hovik
-c$$$      if (
-c$$$c     ,     Q2.lt.1.25 .or. 
-c$$$     ,     x.gt.1.0) then
-c$$$         mrst_xsn = -1.d0
-c$$$      else
-        
-!!! Switch to using F1F209 instead of MRST2001 NK 01/27/10       
-c        call mrst_sub(Q2,x,F1p_2x,F2p,F1n_2x,F2n)
-c        F1p = F1p_2x/2/x
-c        F1n = F1n_2x/2/x
+C By Jixie @ Nov. 6, 2014
+C According to a figure of XS vs x_bj provided by Whit,
+C http://quarks.temple.edu/~whit/SANE/sane_meetings/10-29-2014/F2pCompare.png
+C P. Bosted's Model fail to describe data if x<0.3
+C Here I only use Bosted's model if x>=0.3
 
-c      if (target_type.EQ.0) then    ! define polarized target
-c         Z=1
-c         A=1
-c      elseif (target_type.EQ.1) then          ! define standard carbon target
-c         Z=6
-c         A=12
-c      endif
+      if (x .lt. 0.3) then
+!!!Use MRST2001 if x<0.3 
 
-
-c        call F1F2IN09(Z, A, Q2/1.d0, W2/1.d0, F1pIN, F2pIN, r) 
-c        call F1F2QE09(Z, A, Q2/1.d0, W2/1.d0, F1pQE, F2pQE ) 
-
-c        F1p = F1pIN + F1pQE
-c        F2p = F2pIN + F2pQE
-
-
-c        w1p = F1p/ Mp
-c        w2p = F2p/(E-Ep)
+        call mrst_sub(Q2,x,F1p_2x,F2p,F1n_2x,F2n)
+        F1p = F1p_2x/2/x
+        F1n = F1n_2x/2/x
+        w1p = F1p/ Mp
+        w2p = F2p/(E-Ep)
 
 c cross section comes out in fm2/GeV/sr, convert that to nb/GeV/sr
+c also multiply by atomic number to get the xs for the whole nucleus
+        mrst_xsn = AAA*sigmot(E*1.d3,theta)*(2*w1p*tan(theta/2)**2 + w2p)*1.D+7
 
-c        mrst_xsn = sigmot(E*1.d3,theta)*(2*w1p*tan(theta/2)**2 + w2p)*1.D+7
-
-      call CROSS_TOT(ZZZ,AAA,E,Ep,theta,sigmatot,f1,f2,q2,w2,r)
-      mrst_xsn = sigmatot
-CCCC Include elastic for Hovik
-c$$$      endif
+      else
+!!!Use Bosted's model  if x>=0.3
+c    CROSS_TOT return xs in nb/GeV/sr for the whole nucleon
+        call CROSS_TOT(ZZZ,AAA,E,Ep,theta,sigmatot,f1,f2,q2,w2,r)
+        mrst_xsn = sigmatot
+      endif
 
       return
       end
