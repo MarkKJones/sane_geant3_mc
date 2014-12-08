@@ -135,8 +135,8 @@ C        PKINE(1) = 5.00
         EE = sqrt(pkine(1)**2+mass(part)**2)
         pp = pkine(1)
       endif
-c      VERTEX(3) = uu(3)-182.5
-      VERTEX(3) = uu(3)-237.5
+      VERTEX(3) = uu(3)-187.5
+c      VERTEX(3) = uu(3)-237.5
       pps=pp
 c      write(*,*)Vertex
 c      write(*,*)'GUKINE CHECK 2'
@@ -161,19 +161,19 @@ C
       PLAB(3) = PKINE(1)*COS(THETA)
 
 
-c      write(*,*)'GUKINE CHECK 3'
+c      write(*,*)'GUKINE CHECK 3',ee,vertex
 
 C Storing the first vertex and retrieving the actual vertex number NVERT
 C int the JVERTX data structure
 C
       CALL GSVERT(VERTEX,0,0,0,0,NVERT)
-c      write(*,*)'GUKINE CHECK 4'
+c     write(*,*)'GUKINE CHECK 4'
 C
 C Store the particle IK with its given momentum in the particle stak
 C and attach the primary vertex NVERT to it
 C
        CALL GSKINE(PLAB,IK,NVERT,0,0,NT)
-c      write(*,*)'GUKINE CHECK 5'
+c       write(*,*)'GUKINE CHECK 5'
 C
 C Kinematics debug (controlled by ISWIT(1) )
 C
