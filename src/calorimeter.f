@@ -66,7 +66,7 @@ c
       PAR(2) = 248/2.+0.0001
       PAR(3) = 44./2.+0.0001
       CALL GSVOLU( 'ECAL' , 'BOX ' ,NMED_Air, PAR , 3 , IVOL )
-      CALL GSPOS('ECAL',1,'EARM',x,y, cal_drift/2. ,0,'MANY')
+      CALL GSPOS('ECAL',1,'EARM',x,y, -187.5+cal_drift+cal_depth/2. ,0,'MANY')
 
       end
 
@@ -80,8 +80,9 @@ c
       include 'constants.inc'
       include 'geant.inc'
       include 'sane.inc'
+      include 'sane_misc.inc'
       include 'materials.inc'
-C     include 'beta_geom.inc'  Including parameters from this inc file below. JDM 
+c      include 'beta_geom.inc'  Including parameters from this inc file below. JDM 
 c      include 'sane_misc.inc'
 
       real*4 x,y
@@ -146,13 +147,13 @@ C     Replacing ECAL with PCAL, Protvino part, and RCAL, RCS part
       PAR(2) = prot_cal_height/2.
       PAR(3) = cal_depth/2.
       CALL GSVOLU( 'PCAL' , 'BOX ' ,NMED_LG, PAR , 3 , IVOL )
-      ivol_p = ivol
+      vol_pcal = ivol
 
       PAR(1) = rcs_cal_width/2.
       PAR(2) = rcs_cal_height/2.
       PAR(3) = cal_depth/2.
       CALL GSVOLU( 'RCAL' , 'BOX ' ,NMED_LG, PAR , 3 , IVOL )
-      ivol_r = ivol
+      vol_rcal = ivol
 
 c     Position Volume of Calorimeter into detector
 c     
@@ -166,25 +167,21 @@ c
       CALL GSPOS('RCAL',1,'ECAL',x,y,
      ,     0.,0,'ONLY')
 
-      end
-      
-ccccccccccccccccccccccccccccccccccccccc
-
-      Subroutine divi_cal()
-c
-c     Divide trackers  to appropriate size
-c
 
 c     Protvino
       CALL GSDVN( 'PCOL' , 'PCAL' ,  32 , 1)
+      vol_pcol = ivol+1
       CALL GSDVN( 'PBLC' , 'PCOL' ,  32 , 2)
+      vol_pblc = ivol+2
 
 c     RCS
       CALL GSDVN( 'RCOL' , 'RCAL' ,  30 , 1)
+      vol_rcol = ivol+3
       CALL GSDVN( 'RBLC' , 'RCOL' ,  24 , 2)   
-  
+      vol_rblc = ivol+4
+
       end
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+*********      
       Subroutine step_cal(IP)
       implicit none
 
@@ -211,7 +208,7 @@ c      write(*,*)lvolum(nlevel),destep
       iycell=0
       ixcell=0
 c      if(lvolum(nlevel).eq.4.and.inwvol.eq.1)write(*,*)IP,inwvol,DESTEP
-      if(lvolum(nlevel).eq.37.and.DESTEP.gt.0)then
+      if(lvolum(nlevel).eq.vol_pblc.and.DESTEP.gt.0)then
 c         write(*,*)NLEVEL,NUMBER(1),NUMBER(2),NUMBER(3),
 c     ,        NUMBER(4),NUMBER(5)
          iycell = NUMBER(NLEVEL)
@@ -219,7 +216,8 @@ c     ,        NUMBER(4),NUMBER(5)
          destep_sm = destep+(rand()-0.5)*2*0.09*destep
          Energy(ixcell,iycell)=Energy(ixcell,iycell)+DESTEP
 c         Energy(ixcell,iycell)=Energy(ixcell,iycell)+DESTEP_sm
-c         write(*,*)"We hit P",ixcell,iycell,Energy(ixcell,iycell)
+         if (ixcell .lt. 1 .or. ixcell .gt. 32) write(*,*)"We hit P",ixcell,iycell,Energy(ixcell,iycell)
+         if (iycell .gt. 32) write(*,*)"We hit P",ixcell,iycell,Energy(ixcell,iycell)
 c         write(*,*)ifirst
 c         write(*,*)IP,inwvol
          if(inwvol.ge.0.and.inwvol.le.2.and.ifirst.eq.0)then
@@ -232,14 +230,15 @@ c         write(*,*)ifirst,Vect(1),Vect(2)
 c         write(*,*)Xv,Yv,Zv,Vect(3),step
       endif
 c      if(lvolum(nlevel).eq.4.and.inwvol.eq.1)write(*,*)IP,inwvol,DESTEP
-      if(lvolum(nlevel).eq.39.and.DESTEP.gt.0)then
+      if(lvolum(nlevel).eq.vol_rblc.and.DESTEP.gt.0)then
          iycell = NUMBER(NLEVEL)+32
          ixcell  = NUMBER(NLEVEL-1)
          destep_sm = destep+(rand()-0.5)*2*0.09*destep
 c         Energy(ixcell,iycell)=Energy(ixcell,iycell)+DESTEP_sm
          Energy(ixcell,iycell)=Energy(ixcell,iycell)+DESTEP
 c         write(*,*)IP,inwvol
-c         write(*,*)"We hit R",ixcell,iycell,Energy(ixcell,iycell)
+         if (ixcell .lt. 1 .or. ixcell .gt. 30) write(*,*)"We hit R",ixcell,iycell,Energy(ixcell,iycell)
+         if (iycell .gt. 56) write(*,*)"We hit R",ixcell,iycell,Energy(ixcell,iycell)
          if(inwvol.ge.0.and.inwvol.le.2.and.ifirst.eq.0)then
             Xv=Vect(1)
             Yv=Vect(2)
@@ -252,11 +251,11 @@ c         endif
 c         write(*,*)Xv,Yv,Zv,Vect(3),step
 
       endif
- 
+c      write(*,*) 'step ca = ',ixcell,iycell,Energy(ixcell,iycell),destep
 
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      Subroutine digi_cal()
+      Subroutine digi_cal(esum,nesum)
       implicit none
 
 c
@@ -282,7 +281,7 @@ c
       real*4 coor(3),cooro(3)
       common/ENERGYYX/Eyx,xx,yy
       integer nnclust,nnclustA
-      real Emax,Etot,Etot9
+      real Emax,Etot,Etot9,esum,nesum
       real xmax,ymax,xmom,ymom
       integer ixmax,iymax
       real Etot3pp,Etot3pm,Etot3mp,Etot3mm
@@ -295,40 +294,34 @@ c      write(*,*)'Entering CAL'
       nnclustA =0
       ixmax =0
       iymax =0
-c      write(*,*)'GUOUT CALLED',EE
+c      write(*,*)'GUOUT CALLED',EE,part
 c      if(ixcell.ne.0)write(*,*)Energy(ixcell,iycell),th*180/3.141,ph
       if(EE.ne.EE)then
          goto 21
       endif
-
+c       esum=0
       do i=1,56
          do j=1,32
-c            Energy(j,i) = Energy(j,i)+(rand()-0.5)*2*0.09*Energy(j,i)
-
-c            write(*,*)Energy(j,i)
-            if(Energy(j,i).lt.bigcal_block_cut_check((i-1)*32+j))
-     ,           Energy(j,i)=0
             if(Energy(j,i).gt.Emax.and.Energy(j,i)
-     >         .eq.Energy(j,i))then
+     >         .eq.Energy(j,i).and.Energy(j,i).gt.0.010)then
                Emax=Energy(j,i)
                nnclustA = nnclustA+1
                ixmax = j
                iymax = i
                if(i.le.32)then
-                  bsize=3.81
-                  xmax= j*bsize-32*3.81/2.-bsize/2.
-                  ymax= i*bsize-(32*3.81+24*4.02167)/2.-bsize/2.
+                  bsize=3.8098
+                  xmax= j*bsize-32*3.8098/2.-bsize/2.
+                  ymax= i*bsize-(32*3.8098+24*4.02167)/2.-bsize/2.
                else
                   bsize=4.02167
-                  xmax= j*bsize-32*3.81/2.-bsize/2.
-                  ymax= 32*3.81+(i-32)*bsize-
-     ,                 (32*3.81+24*4.02167)/2.-bsize/2.
+                  xmax= j*bsize-32*3.8098/2.-bsize/2.
+                  ymax= 32*3.8098+(i-32)*bsize-
+     ,                 (32*3.8098+24*4.02167)/2.-bsize/2.
                endif
 
             endif
          enddo
       enddo
-c      write(*,*)ixmax
       if(Emax.lt.0.05.or.abs(EE).gt.5)then
 c         write(*,*)Emax,EE
          goto 21
@@ -355,45 +348,51 @@ c      if(ixcell.ne.0)write(*,*)Emax
          enddo
        enddo
 
-
+c      if (nclust .ge. 0 .and. abs(ymax-70) .lt. 10) then
+c      write(*,*) ' max =',nclust,iymax,ixmax,nnclustA,emax,-ee,esum
+      esum=0
+      nesum=0
+      do i=1,56
+         do j=1,32
+            if (Energy(j,i).gt.0) then
+c               write(*,*) i,j,Energy(j,i)
+               nesum=nesum+1.
+               esum=esum+Energy(j,i)
+               endif
+            enddo
+            enddo
+c         endif
 c      write(*,*)'done with CAL 0',iymax,ixmax
 c      do iclust=1,5
       do i=iymax-2,iymax+2
          do j=ixmax-2,ixmax+2
-            if(i.gt.0.and.j.gt.0.and.i.lt.57.and.j.lt.33)then
                Eyx(i-iymax+3,j-ixmax+3)=0
                yy(i-iymax+3,j-ixmax+3)=0
                xx(i-iymax+3,j-ixmax+3)=0
-c$$$               if(bigcal_block_cut((i-1)*32+j).ne.
-c$$$     ,          bigcal_block_cut_check((i-1)*32+j))
-c$$$     ,          write(*,*)i,j,(i-1)*32+j,
-c$$$     ,              bigcal_block_cut((i-1)*32+j),
-c$$$     ,              bigcal_block_cut_check((i-1)*32+j)
+c           if (i .ge.1 .and. j .ge. 1 .and. Energy(j,i).gt.0.010) then
+            if(i.gt.0.and.j.gt.0.and.i.lt.57.and.j.lt.33)then
                if(i.gt.0.and.j.gt.0.and.i.lt.57.and.j.lt.33.and.
-     ,              Energy(j,i).gt.bigcal_block_cut_check((i-1)*32+j).and.
+c     ,              Energy(j,i).gt.bigcal_block_cut_check((i-1)*32+j).and.
      ,              Energy(j,i).eq.Energy(j,i))then
                   Etot = Etot+Energy(j,i)
                   nnclust=nnclust+1
                   ix(nnclust)=j
                   iy(nnclust)=i
-                  Eyx(i-iymax+3,j-ixmax+3)=0
-                  xx(i-iymax+3,j-ixmax+3)=0
-                  yy(i-iymax+3,j-ixmax+3)=0
 cc                  if(j.le.32)then !! This was wrong HB, NK 12/15/10
                   if(i.le.32)then
-                  bsize=3.81
-               else
+                  bsize=3.8098
+                   else
                   bsize=4.02167
-               endif
-               xc= ix(nnclust)*bsize-32*3.81/2.-bsize/2.
-               if(iy(nnclust).lt.33)then
+                   endif
+                  xc= ix(nnclust)*bsize-32*3.8098/2.-bsize/2.
+                  if(iy(nnclust).lt.33)then
                   yc= iy(nnclust)*bsize-
-     ,                 (32*3.81+24*4.02167)/2.-bsize/2.
-               else
-                  yc= (iy(nnclust)-32)*bsize+32*3.81-
-     ,                 (32*3.81+24*4.02167)/2.-bsize/2.
+     ,                 (32*3.8098+24*4.02167)/2.-bsize/2.
+                  else
+                  yc= (iy(nnclust)-32)*bsize+32*3.8098-
+     ,                 (32*3.8098+24*4.02167)/2.-bsize/2.
 
-               endif
+                  endif
 c               write(*,*)iy(nnclust),bsize
 
                if(i.lt.33.and.i.gt.0.and.j.gt.0.and.j.lt.33)then
@@ -421,10 +420,14 @@ c                  ymom = xmom+(y(nnclust)-ymax)*sqrt(Energy(j,i))
 c     endif
             endif
          endif
+c         endif ! gt 0.010
          enddo
       enddo
 c      enddo
-
+      if (nclust .ge. 0 .and. abs(ymax-70) .lt. 10) then
+c         write(*,*) ' etot= ',etot,etot+ee,esum
+c            read(*,*) i
+         endif
 CCC Move to guout for looping over clusters
 c      do i=1,32
 c         do j=1,56

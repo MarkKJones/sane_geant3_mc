@@ -9,7 +9,8 @@ C-- Define some volume numbers for certain elements.  BE CAREFUL IF YOU CHANGE
 C-- THE GEOMETRY AS THIS MAY CHANGE THE VOLUME NUMBER.  This could be done
 C-- more intelligently.
 
-      integer*2 vol_hodo
+      integer*2 vol_luc,vol_hdiv
+      integer*2 vol_pcal,vol_rcal,vol_pcol,vol_pblc,vol_rcol,vol_rblc
       integer*2 vol_gain
       integer*2 vol_ecal
       integer*2 vol_veto
@@ -18,18 +19,14 @@ C-- more intelligently.
       integer*2 vol_fty1        ! JDM
       integer*2 vol_ftx1        ! JDM
       integer*2 vol_fty2        ! JDM
+      integer*2 vol_fy1b        ! JDM
+      integer*2 vol_fx1b        ! JDM
+      integer*2 vol_fy2b        ! JDM
 
-      parameter(vol_hodo = 2)
-      parameter(vol_gain = 3)
-      parameter(vol_ecal = 4)
-      parameter(vol_veto = 5)
-      parameter(vol_cgas = 8)
-      parameter(vol_magn = 23)  ! JDM
-      parameter(vol_fty1 = 27)  ! JDM
-      parameter(vol_ftx1 = 28)  ! JDM
-      parameter(vol_fty2 = 29)  ! JDM
-      
-
+      COMMON /volnumber/vol_luc,vol_hdiv,vol_pcal,vol_rcal
+     > ,vol_pcol,vol_pblc,vol_rcol,vol_rblc,vol_fty1,vol_fty2
+     > ,vol_gain,vol_ecal,vol_veto,vol_cgas,vol_magn
+     > ,vol_fy1b,vol_fx1b,vol_fy2b
 C-- miscellaneous variables related to SANE physics geant that are not
 C-- part of the beam line simulations package.
 
@@ -93,9 +90,11 @@ c      COMMON /TGTSHT/z,n,num_tgts
 
 C-- Energy loss and Cerenkov photons generated in Pb-Glass and
 C-- photons generated in gas Cerenkov.
-
-      real*8 dEBloc(vert_blocks,horz_blocks)  ! energy loss in Pb-Glass blocks
-      integer*4 photBloc(vert_blocks,horz_blocks) ! photons in Pb-Glass blocks
+	integer vert_block,horz_block
+       parameter (vert_block=56)
+       parameter (horz_block=32)
+      real*8 dEBloc(vert_block,horz_block)  ! energy loss in Pb-Glass blocks
+      integer*4 photBloc(vert_block,horz_block) ! photons in Pb-Glass blocks
 
       integer*4 HitFrontY1(133)  ! Bar hits in first front tracker plane -JDM 
       integer*4 HitFrontX1(73)  ! Bar hits in third front tracker plane-6/19/07
