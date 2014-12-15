@@ -44,10 +44,11 @@ C
       call vzero(gc_eng,tot_gc)
       call vzero(gc_part,tot_gc)
 
-      call vzero(eloss,10)
       call vzero(dEBloc,vert_blocks*horz_blocks*2)
       call vzero(photBloc,vert_blocks*horz_blocks*2)
-
+      do i=1,10
+         eloss(i)=0
+         enddo
       photCer  = 0
       photGood = 0
       cwn_cergood = 0

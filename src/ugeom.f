@@ -10,58 +10,6 @@
       include 'sane_misc.inc'
       include 'sane_accp.inc'
 
-! C------------ Including beta_geom.inc parameters here - JDM - 05/27/07
-! 
-! C-- beta_geom.inc        Glen Warren  8/03
-! C--
-! C-- details geometry of BETA detector
-! 
-! C Detector geometry
-! 
-!       real*4 block_height, block_width
-!       real*4 cal_height,cal_width
-!       real*4 cal_depth
-!       real*4 cer_length
-        integer*4 horzBl,vertBl
-! 
-!       parameter( block_height =   4.d0 )
-!       parameter( block_width  =   4.d0 )
-        parameter( horzBl  =  28    )
-        parameter( vertBl  =  58    )
-!       parameter( cal_depth    =  40.d0 )
-!       parameter( cer_length   = 150.d0 )
-! 
-!       parameter( cal_height   = vert_blocks*block_height )
-!       parameter( cal_width    = horz_blocks*block_width  )
-! 
-!       real*4 gain_thk
-! 
-!       parameter( gain_thk = 1./2.)
-! 
-!       real*4 cer_win_thk
-! 
-!       parameter( cer_win_thk = 0.0127 )
-! 
-!       real*4 hodo_thk
-! 
-!       parameter( hodo_thk = 3.75)
-! 
-! C Detector Setup
-! 
-!       real*4 eff_cal_drift
-!       real*4 cal_drift 
-!       real*4 cer_drift
-!       real*4 front_width
-!       real*4 fronthodo_drift
-! 
-!       parameter( eff_cal_drift = 335.d0 ) ! used in reconstruction
-!       parameter( cal_drift    = 325.d0 )
-!       parameter( cer_drift    =  55.d0 )
-!       parameter( front_width  =  0.3   )
-!       parameter( fronthodo_drift  =  52.0   )
-! 
-! 
-! C ------------ End Parameter's from old beta_geom.inc  - JDM - 5/27/07 
 
 
 C
@@ -284,8 +232,8 @@ c      igauto = 0
      +     FIELDMAX2,TMAX_FD,STE_MAX,DEE_MAX, EPSILON, ST_MIN, 0 , 0 )
       CALL GSTMED( NMED_Pb,'Pb-Shielding'          , 13 , 0 , I_FIELD2,
      +     FIELDMAX2,TMAX_FD,STE_MAX,DEE_MAX, EPSILON, ST_MIN, 0 , 0 )
-      CALL GSTMED( NMED_LG,'Pb-Glass'              , 22 , 0 , I_FIELD2,
-     +     FIELDMAX2,TMAX_FD,STE_MAX,DEE_MAX, EPSILON, ST_MIN, 0 , 0 )
+c      CALL GSTMED( NMED_LG,'Pb-Glass'              , 22 , 0 , I_FIELD2,
+c     +     FIELDMAX2,TMAX_FD,STE_MAX,DEE_MAX, EPSILON, ST_MIN, 0 , 0 )
       CALL GSTMED( NMED_Sc,'Scintillator'          , 23 , 0 , I_FIELD2,
      +     FIELDMAX2,TMAX_FD,STE_MAX,DEE_MAX, EPSILON, ST_MIN, 0 , 0 )
       CALL GSTMED( NMED_Kap,'Kapton'               , 24 , 0 , I_FIELD2,
@@ -384,12 +332,16 @@ C
       write(*,*) ' earm =',par
       CALL GSVOLU( 'EARM' , 'BOX ' ,NMED_Air, PAR , 3 , IVOL ) ! vol 1
 
+
 c
 c     Implement Lucite Hodoscope into detector
 c      
       call ugeom_lucite(ivol) 
 
+      call  ugeom_tracker(ivol)
 
+      call def_calspace(ivol)
+      call ugeom_cal(ivol)
 
 
       PAR(1) = cal_width/2.
@@ -401,21 +353,14 @@ C      CALL GSVOLU( 'FESH' , 'BOX ' ,NMED_Fe, PAR , 3 , IVOL )
       PAR(2) = cal_height/2.
       PAR(3) = gain_thk
       CALL GSVOLU( 'GAIN' , 'BOX ' ,NMED_Gain, PAR , 3 , IVOL ) ! vol 3 
-c      vol_gain = IVOL
+      vol_gain = IVOL
 
-c      PAR(1) = cal_width/2.
-c      PAR(2) = cal_height/2.
-c      PAR(3) = cal_depth/2.
-c      CALL GSVOLU( 'ECAL' , 'BOX ' ,NMED_LG, PAR , 3 , IVOL )
-c      CALL GSPOS('ECAL',1,'EARM',x,y,162.5000,0,'ONLY')
-c      vol_ecal = IVOL
-      call def_calspace(ivol)
 
       PAR(1) = cal_width/2.*1.2
       PAR(2) = cal_height/2.*1.2
       PAR(3) = 2.
       CALL GSVOLU( 'VETO' , 'BOX ' ,NMED_Sc, PAR , 3 , IVOL )
-c      vol_veto = ivol
+      vol_veto = ivol
 
       PAR(1) = cal_width/2.*cer_drift/cal_drift*1.0
       PAR(2) = cal_height/2.*cer_drift/cal_drift*1.0
@@ -436,7 +381,7 @@ C
 *      CALL GSVOLU( 'CGAS' , 'TRD2' ,NMED_Vac, PAR , 5 , IVOL )
       CALL GSVOLU( 'CGAS' , 'TRD2' ,NMED_N2, PAR , 5 , IVOL )
        write(*,*) ' cgas = ', ivol
-c      vol_cgas = IVOL
+      vol_cgas = IVOL
  
       PAR(1) = 2.
       PAR(2) = 2.
@@ -497,7 +442,6 @@ c      CALL GSVOLU( 'CELL' , 'TUBE' ,NMED_Pb, PAR , 3 , IVOL )
 C     PAR(3) = 22 
       PAR(3) = 25.   !  JDM
       CALL GSVOLU( 'MAGN' , 'TUBE' ,NMED_Vac, PAR , 3 , IVOL )
-c      vol_magn = IVOL
 
       PAR(1) = 10.
       PAR(2) = 5./tan(17.0*0.0174533)
@@ -534,6 +478,7 @@ C      PAR(5) = 18.3/tan(17*.0174533)
       CALL GSROTM(3,90.,90.,90.,0.,180.,0.)
       CALL GSROTM(4,90.,rotmf,0.,rotmf,90.,270.+rotmf)
       CALL GSVOLU( 'MAG2' , 'CONE', NMED_Al, PAR, 5 , IVOL)
+      vol_magn = IVOL
 
 
 
@@ -567,10 +512,8 @@ C
 C     Adding Front Tracking Hodoscope - JDM 5/22/07  -  Three planes of
 C     bars
 C     
-      call  ugeom_tracker(ivol)
 
 c*****************
-      call ugeom_cal(ivol)
       
       
 
@@ -581,6 +524,8 @@ C
       z0 = -earm_length
 
 C   Position (general)target related volumes
+cmkj
+
         CALL GSPOS('NOSE',1,'TCAN',0.,0.,TargVrtzOff  , 0,'MANY')
         CALL GSPOS('TAIL',1,'NOSE',0.,0.,TargVrtzOff  , 0,'MANY')
         CALL GSPOS('CWAL',1,'NOSE',0.,0.,TargVrtzOff  , 1,'ONLY')
@@ -590,25 +535,18 @@ C   Position (general)target related volumes
         CALL GSPOS('BRA2',1,'MAGN',0.,0.,0.  , 0,'ONLY')
         CALL GSPOS('BRA3',1,'MAGN',0.,0.,0.  , 0,'ONLY')
         CALL GSPOS('BRA4',1,'MAGN',0.,0.,0.  , 0,'ONLY')
-C  z was 10, -10 for MAG2
-C
-C        CALL GSPOS('MAG2',1,'TCAN',+17.28,0.,0., 4,'MANY') 
-C        CALL GSPOS('MAG2',2,'TCAN',-17.28,0.,0., 4,'MANY')
+
 
 
         CALL GSPOS('MAG2',1,'MAGN',0.,0.,+17.28, 0,'MANY')
         CALL GSPOS('MAG2',2,'MAGN',0.,0.,-17.28, 3,'MANY')
         CALL GSPOS('MAGN',1,'TCAN',0.,0.,0.,   4,' MANY')
 
-c$$$        CALL GSPOS('PLUG',1,'MAGN',0.,0.,-14.,               0,'ONLY')
-
-c       write(*,*)'ta-dow',lumin,thick,dens,atomnum!,beam_current !,z
-c     >           ,N_A,Q_E
 
 
-      CALL GSPOS('TCAN',1,'EARM',0.,0.,z0, 2,' ONLY')
-      CALL GSPOS('TWIN',1,'TCAN',0.,0.,0., 0,'ONLY')
-
+       CALL GSPOS('TCAN',1,'EARM',0.,0.,z0, 2,' ONLY')
+       CALL GSPOS('TWIN',1,'TCAN',0.,0.,0., 0,'ONLY')
+cmkj
 
 C   Position Detectors
 
@@ -620,9 +558,9 @@ C   Position Detectors
       CALL GSPOS('CBKW',1,'CGAS',x,y,+cer_length/2.,   0,'ONLY')
 
 C      CALL GSPOS('FESH',1,'EARM',x,y,z0+cal_drift-5,0,'ONLY') ! Iron Shield test, JDM
-      CALL GSPOS('GAIN',1,'EARM',x,y,z0+cal_drift-gain_thk*2., 0,'ONLY')
-      CALL GSPOS('VETO',1,'EARM',x,y,z0+cal_drift+2.*cal_depth/2.+30.,0,
-     + 'ONLY')
+c      CALL GSPOS('GAIN',1,'EARM',x,y,z0+cal_drift-gain_thk*2., 0,'ONLY')
+c      CALL GSPOS('VETO',1,'EARM',x,y,z0+cal_drift+2.*cal_depth/2.+30.,0,
+c     + 'ONLY')
 
       
 C     Postion Detector Shielding
@@ -635,14 +573,7 @@ C     Postion Detector Shielding
 C     ONLY')
       
 C     
-C     Divide calorimeter into blocks
-C     
-c      CALL GSDVN( 'ECOL' , 'ECAL' ,   horzBl , 1)
-c      CALL GSDVN( 'BLOC' , 'ECOL' ,   vertBl , 2)
 
-      call divi_lucite()
-      call divi_tracker()
-      call divi_cal()
      
 CCC Add on outside LHe NK 03/16/11
       CALL GSROTM(1,90.,SNGL(theta_0),0.,SNGL(theta_0),90.,310.)
@@ -661,11 +592,13 @@ CCC Add on outside LHe NK 03/16/11
 
       if (target_type.EQ.0) then    ! define polarized target
         write(*,*) '***** Configuring Polarized Target'
+cmkj
         CALL GSPOS('CELL',1,'NOSE',0.,0.,TargVrtzOff  , 1,'ONLY')
         CALL GSPOS('OLHE',1,'NOSE',0.,0.,+1.75+TargVrtzOff+0.000162  , 1,'ONLY')
         CALL GSPOS('OLHE',2,'NOSE',0.,0.,-1.75+TargVrtzOff-0.000162  , 1,'ONLY')
         CALL GSPOS('CUAL',1,'NOSE',0.,0.,+1.5+TargVrtzOff+0.000081  , 1,'ONLY')
         CALL GSPOS('CUAL',2,'NOSE',0.,0.,-1.5+TargVrtzOff-0.000081  , 1,'ONLY')
+cmkj
 cc      do ilum=1,3  
 c      do ilum=1,5  
         lumin(1) = 3.      !! 3*H

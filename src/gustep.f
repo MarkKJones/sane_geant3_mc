@@ -68,13 +68,13 @@ c                 write(*,*)CHCASE,ip
       
 
 *---  Perfrom action on all the particles
-c      write(*,*)'NGKINE = ',NGKINE,' IP = ',IP
       IF (NGKINE.GT.0) THEN
 c      write(*,*)NGKINE,IP,IG
 c      write(*,*)'NGKINE gt 0 ',NGKINE,' IP = ',IP
         CALL GSKING(0)
       ENDIF
 c      write(*,*)'gustep 1.1'
+c      write(*,*)'NGKINE = ',NGKINE,' IP = ',IP,lvolum(nlevel),nlevel,ipart
 
 *      if (ipart.eq.3.and.vect(3).gt.130. .and.vect(3).lt.150.) 
 *     1 write(*,*) 'tracking',numed,lvolum(nlevel),nlevel,inwvol,ipart,vect(3)
@@ -103,6 +103,7 @@ c      write(*,*)'gustep 1.2'
 c
 C    Front hodoscope tracking code - JDM - 06/20/07 
 c
+c      write(*,*) 'volume =',lvolum(nlevel),destep
       call step_cal(IP)
       if (getot.gt.0.020 .and.vect(6).gt.0.5 ) then
 c
@@ -120,7 +121,7 @@ C     --- Begin magnet tracking code - JDM  5/7/07
 c
       if ((lvolum(nlevel).eq.vol_magn).and.(inwvol.eq.1)) then ! Entering magnet
 *        write(*,*) 'Entering Magnet',ipart,vect
-        istop=2                 ! Kill trace
+c        istop=2                 ! Kill trace
         magcnt = magcnt + 1
 C        write(*,*) 'incremented to ', magcnt
       else
@@ -141,19 +142,28 @@ C        write(*,*) 'gustep :',number(nlevel),number(nlevel-1),destep
       if (DESTEP.GT.0.) then
         if     (numed.eq.NMED_LG) then
            ELoss(4) = ELoss(4) + destep
-        elseif (lvolum(nlevel).eq.vol_hodo) then
+        elseif (lvolum(nlevel).eq.vol_hdiv) then
            ELoss(2) = ELoss(2) + destep
-        elseif (lvolum(nlevel).eq.vol_gain) then
+        elseif (lvolum(nlevel).eq.vol_fx1b.or.lvolum(nlevel).eq.vol_fy1b) then
            Eloss(3) = ELoss(3) + destep
-        elseif (lvolum(nlevel).eq.vol_veto) then
+        elseif (lvolum(nlevel).eq.vol_magn) then
            Eloss(5) = ELoss(5) + destep
         elseif (lvolum(nlevel).eq.vol_cgas) then
            Eloss(1) = ELoss(1) + destep
         else
-           ELoss(6) = ELoss(6) + destep
+          ELoss(6) = ELoss(6) + destep
         endif
 
-
+        if (lvolum(nlevel).lt.37) then
+           Eloss(7) = eloss(7) + destep
+c           write(*,*) ' eloss7 = ',eloss(7),lvolum(nlevel)
+        elseif (lvolum(nlevel).eq.37) then
+           Eloss(8) = eloss(8) + destep
+        elseif (lvolum(nlevel).eq.39) then
+           Eloss(9) = eloss(9) + destep
+        else
+           Eloss(10) = eloss(10) + destep
+        endif
 
 *        write(*,'("ELOSS: ",i3,7f6.1)') lvolum(nlevel),(Eloss(i)*1000.,i=1,6),destep*1000.
       endif

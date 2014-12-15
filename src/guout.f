@@ -46,7 +46,7 @@ c      real Eyx(5,5),xx(5,5),yy(5,5)
       real PHI_C,THETA_C
       real PHI_UC,THETA_UC
 
-      real Emt
+      real Emt,esum,nesum
       real xmomsqr,xmomsq,ymomsqr,ymomsq
 c      double precision VectorN(12)
       double precision VectorN(27)
@@ -63,7 +63,7 @@ C
 C Fill the total energy of the event in the histogram
 C
       
-c      write(*,*)'num_gc=',num_gc
+c      write(*,*)'volume=',lvolum(nlevel),nlevel,vect(1),vect(2),vect(3),uu(1),uu(2),uu(3)
       if(xsn.eq.0)goto 1101
       cwn_p_ne =0
       cwn_p_ng =0
@@ -118,7 +118,7 @@ c      write(*,*)z(tgt_num),n(tgt_num)
       endif
          
 c      write(*,*)'CR in NTUPLE ',xsn
-      cwn_asym = asym
+      cwn_stopvol = float(lvolum(nlevel))
       cwn_th   = th
       cwn_ph   = ph
       cwn_cerphot = asym
@@ -137,12 +137,14 @@ C    --- Front and Lucite Hososcopes -JDM - 6/20/07
 
 CCC Loop over clusters to include other particles HB,NK 04/28/10
       nclust=0
+c      write(*,*) ' eloss = ',eloss(7),eloss(8),eloss(9),eloss(10)
       do iclust=1,5 
-         call digi_cal()
+         call digi_cal(esum,nesum)
             etot=0
             do i=1,5
                do j=1,5
                   etot=etot+eyx(i,j)
+c                  write(*,*) ' gout = ',i,j,eyx(i,j)
                enddo
             enddo
         
@@ -175,13 +177,15 @@ c      write(*,*)2,part,eyx(3,3)
             VectorN(24)  = eyx(4,5)
             VectorN(25)  = eyx(5,5)
             
-            ncell(iclust)=0
-            do ii=1,5
-               do jj=1,5
-                  if(eyx(ii,jj).gt.0.01)ncell(iclust)=ncell(iclust)+1
-                  
-               enddo
-            enddo
+c            ncell(iclust)=0
+c            do ii=1,5
+c               do jj=1,5
+c                  if(eyx(ii,jj).gt.0.01)ncell(iclust)=ncell(iclust)+1
+c                  
+c               enddo
+c            enddo
+            ncell(iclust)=nesum
+c            write(*,*) ' nesum = ',nesum,esum,etot
             VectorN(26) = DBLE(ixmax)
             VectorN(27) =DBLE(iymax)
             
@@ -225,7 +229,7 @@ c     ,           ,E_coor*1000
 c      endif
 CCC Smear to get resolution similar to data HB NK 08/11/10
 CCCC 12% shift seems to get it closest from pi0 mass peak. 
-            E_coor = E_coor +(rand()-0.5)*2*0.12*E_coor
+c            E_coor = E_coor +(rand()-0.5)*2*0.12*E_coor
 c            E_coor = E_coor +(rand()-0.5)*2*0.09*E_coor
 
             call CORRECT_ANGLES(
@@ -235,7 +239,8 @@ c            E_coor = E_coor +(rand()-0.5)*2*0.09*E_coor
      ,           E_coor,                
      ,           THETA_C ,
      ,           PHI_C,cer_h(iclust),srx,sry)
-            
+c            write(*,*) ' corr = ',e_coor,theta_c,phi_c 
+            cwn_E_m(iclust)=Esum
             cwn_E_r(iclust)=E_coor
             cwn_th_r(iclust)=THETA_C
             cwn_ph_r(iclust)=PHI_C
@@ -293,7 +298,6 @@ c      enddo !! Finish looping over clusters
             enddo
 
          endif
-c        write(*,*) ' nclust = ',nclust
       enddo !! Finish looping over clusters   
 
 c     write(*,*)etot,coore,EE,etot+coorE,etot+FixE
@@ -308,7 +312,7 @@ C     ---- JDM
 *     write(*,*) part,cwn_part
          
          do i=1,6
-            cwn_u(i) = uu(i)
+            cwn_u(i) = vect(i)
             cwn_dedl(i) = ELoss(i)
          enddo
          
@@ -328,9 +332,9 @@ c         if (.not.(Eloss(4).eq.0.and.Eloss(1).eq.0.and.
 c     1        cwn_nb.eq.0.and.photCer.eq.0))then
 c         if(abs(ph-phi_test).gt.0.01)write(*,*)ph,phi_test
 c         write(*,*) ' xsn = ',xsn,nclust,cwn_E_r(1),ph,phi_test,cer_h(1)
-         if(nclust.gt.0.and.abs(ph-90).lt.90.and.
-     ,        abs(ph-phi_test).lt.0.01.and. cer_h(1).gt.0.and.
-     ,        xsn.gt.0.and.cwn_E_r(1).gt.0.7)then
+c         if(nclust.gt.0.and.abs(ph-90).lt.90.and.
+c     ,        cer_h(1).gt.0.and.
+c     ,        xsn.gt.0.and.cwn_E_r(1).gt.0.7)then
 c            write(*,*)nclust
 c            write(*,*) '# cerenkov photons:',photCer,photGood
 c            write(56,*)zz_t,nn_t,0.938**2+
@@ -338,8 +342,9 @@ c     ,           2*0.938*(E_beam-E_coor)-
 c     ,           2*E_beam*E_coor*(1-cos(THETA_C/180.*3.141)),
 c     ,           xsn,E_coor,THETA_C,-EE,th*180/3.14159
 c            write(*,*) 'pass  xsn = ',xsn,nclust,cer_h(1)
+c               write(*,*) 'ntuple = ',nclust,cwn_th_r(1),cwn_ph_r(1)
             call hfnt(nt_geant)
-         endif
+c         endif
          call clear_cer()
          call clear_cal()
  

@@ -95,16 +95,19 @@ c      endif
        write(*,*)'Target Offset=',TargVrtzOff
 
 C! Read in E_min cut for each block  HB, NK 05/12/10
-      OPEN(7,FILE='energy_cut_parallel.dat',status='OLD')
-      do i=1,1792
-         read(7,*)bigcal_block_cut(i)
-         if(bigcal_block_cut(i).lt.0.01)bigcal_block_cut(i)=0.01
-         bigcal_block_cut_check(i)=bigcal_block_cut(i)
+c      OPEN(7,FILE='energy_cut_parallel.dat',status='OLD')
+c      do i=1,1792
+c         read(7,*)bigcal_block_cut(i)
+c         if(bigcal_block_cut(i).lt.0.01)bigcal_block_cut(i)=0.01
+c         bigcal_block_cut_check(i)=bigcal_block_cut(i)
 cc         bigcal_block_cut_check(i)=0. !!Try without cut
 c         write(*,*)i,bigcal_block_cut(i)
 cc         write(*,*)i,bigcal_block_cut_check(i)
+c      enddo
+c      close(7)
+      do i=1,1792
+         bigcal_block_cut_check(i)=0. !!Try without cut
       enddo
-      close(7)
 
 C! Read in Slow Raster radius and offsets NK 06/09/10
 c      raster_radius = SRRad_tmp	

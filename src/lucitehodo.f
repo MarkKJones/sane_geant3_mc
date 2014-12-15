@@ -79,25 +79,21 @@ c
       PAR(4) = phiMinL
       PAR(5) = phiMaxL
       CALL GSVOLU( 'HODO' , 'TUBS ' ,NMED_Luc, PAR , 5 , ivol )
-c      vol_hodo = ivol
+      vol_luc = ivol
 c
 c     Position Volume Hodo into detector
 c
       CALL GSROTM(7,0,90.,-90.,0,0,0)
-      CALL GSPOS('HODO',1,'EARM',0.,0.,-237.5+240.,  7,'ONLY')      
+      write(*,*) ' position lucite'
+      CALL GSPOS('HODO',1,'EARM',0.,0.,-187.5+240.,  7,'ONLY')      
 c
 c     Divide Detector volume to 28 separate lucite bars.
 c      
+      CALL GSDVN( 'HDIV' ,  'HODO' , 28 , 3 )  
+      vol_hdiv = ivol+1
     
       end
 
-      Subroutine divi_lucite()
-c
-c     Divide Lucite to 28 Bars
-c      
-      CALL GSDVN( 'HDIV' ,  'HODO' , 28 , 3 )  
-      
-      end
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       Subroutine step_lucite()
 c
@@ -121,8 +117,8 @@ c
      ,     T_HOD(28),E_HOD(28),p(28),cx(28),cy(28),cz(28)
       common/TEMP_LUC/ihhit,lucphot,X_HOD,Y_HOD,Z_HOD,T_HOD,E_HOD,p,cx,cy,cz
       
-C      if (lvolum(nlevel).eq.32.and.inwvol.ge.0.and.inwvol.le.2) then ! enter lucite hodo
-         IF(numed.eq.NMED_Luc)THEN
+      if (lvolum(nlevel).eq.vol_hdiv.and.inwvol.ge.0.and.inwvol.le.2) then ! enter lucite hodo
+c         IF(numed.eq.NMED_Luc)THEN
          HitLucHodo(NUMBER(NLEVEL)) = HitLucHodo(NUMBER(NLEVEL)) + 1 
          ihhit                = ihhit+1
          ihodoHit             = ihhit

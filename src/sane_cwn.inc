@@ -27,7 +27,7 @@ C-- Variables related to the thrown particle
       real*4 cwn_xsn     ! cross section
       real*4 cwn_xsnr     ! radiated cross section
       real*4 cwn_xsnscal     ! Oscar pi0 scaling cross section
-      real*4 cwn_asym    ! physics asymmetry
+      real*4 cwn_stopvol    ! volume number where track stopped
       real*4 cwn_th      ! polar angle w.r.t. beam
       real*4 cwn_ph      ! azimuthal angle w.r.t. beam
       real*4 cwn_u       ! array of vertex coordinates
@@ -42,7 +42,7 @@ CC      real*4 Rtot    ! R=sigma_L/sigma_T
       
 
       COMMON /thrown/cwn_E,cwn_p,cwn_xsn,cwn_xsnr,cwn_xsnscal
-     1               ,cwn_asym,cwn_th,cwn_ph,cwn_u(6),
+     1               ,cwn_stopvol,cwn_th,cwn_ph,cwn_u(6),
      1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate
 CC     1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate,F1tot,Rtot
 
@@ -51,7 +51,8 @@ C-- Variables related to the recon particle
 
       integer*4 nclust
       integer*4 ncell(5)
-      real*4 cwn_E_r(5)       ! energy of thrown particle
+      real*4 cwn_E_m(5)       ! measured energy of thrown particle
+      real*4 cwn_E_r(5)       ! reconstructed energy of thrown particle
       real*4 cwn_th_r(5)      ! polar angle w.r.t. beam
       real*4 cwn_ph_r(5)      ! azimuthal angle w.r.t. beam
       real*4 cwn_x_r(5)       ! corrected x-position 
@@ -67,7 +68,7 @@ C-- Variables related to the recon particle
       real*4 cwn_ph_ucr(5)    ! uncorrected azimuthal angle w.r.t. beam
       integer cer_h(5)        ! Cerenkov status
 
-      COMMON /RECON/nclust,ncell,cwn_E_r,cwn_th_r,cwn_ph_r,
+      COMMON /RECON/nclust,ncell,cwn_E_m,cwn_E_r,cwn_th_r,cwn_ph_r,
      1              cwn_x_r,cwn_y_r,cwn_z_r,
      1              cwn_Q2_r,cwn_xb_r,cwn_W_r,
      1              cwn_x_ur,cwn_y_ur,cwn_z_ur,

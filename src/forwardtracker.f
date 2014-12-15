@@ -73,14 +73,14 @@ c
       PAR(3) = 0.15
       CALL GSVOLU( 'FTX1' , 'BOX ' , NMED_Fx1, PAR , 3 , IVOL ) 
 c      CALL GSVOLU( 'FTX1' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL ) 
-c      vol_ftx1 = ivol
+      vol_ftx1 = ivol
 
       PAR(1) = 11.
       PAR(2) = 19.2
       PAR(3) = 0.15
       CALL GSVOLU( 'FTY1' , 'BOX ' , NMED_Fy1, PAR , 3 , IVOL )
 c      CALL GSVOLU( 'FTY1' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL )
-c      vol_fty1 = ivol
+      vol_fty1 = ivol
 
       
       PAR(1) = 11.
@@ -88,30 +88,24 @@ c      vol_fty1 = ivol
       PAR(3) = 0.15
       CALL GSVOLU( 'FTY2' , 'BOX ' , NMED_Fy2, PAR , 3 , IVOL ) 
 c      CALL GSVOLU( 'FTY2' , 'BOX ' , NMED_Vac, PAR , 3 , IVOL ) 
-c      vol_fty2 = ivol
+      vol_fty2 = ivol
 c
 c     Position Volume traker into detector
 c
-      CALL GSPOS('FTX1',1,'EARM',0,0,-237.5+52.,0,'ONLY')
-      CALL GSPOS('FTY1',1,'EARM',0,0,-237.5+52.+0.3,0,'ONLY')   
-      CALL GSPOS('FTY2',1,'EARM',0,0-0.15,-237.5+52.+0.3*2.,0,'ONLY')
-
-
-      end
-      
-      Subroutine divi_tracker()
+      CALL GSPOS('FTX1',1,'EARM',0,0,-187.5+52.,0,'ONLY')
+      CALL GSPOS('FTY1',1,'EARM',0,0,-187.5+52.+0.3,0,'ONLY')   
+      CALL GSPOS('FTY2',1,'EARM',0,0-0.15,-187.5+52.+0.3*2.,0,'ONLY')
 c
-c     Divide trackers  to appropriate size
-c
-CC One of the layers found shifted by 3mm, adjusted to make distriutions symmetric (HB).
       CALL GSDVN( 'FX1B' ,  'FTX1' , 73 , 1 )  
+      vol_fx1b = ivol+1
       CALL GSDVN( 'FY1B' ,  'FTY1' , 128 , 2 )  
+      vol_fy1b = ivol+2
       CALL GSDVN( 'FY2B' ,  'FTY2' , 129 , 2 )  
-c      CALL GSDVN( 'FX1B' ,  'FTX1' , 64 , 1 )  
-c      CALL GSDVN( 'FY1B' ,  'FTY1' , 128 , 2 )  
-c      CALL GSDVN( 'FY2B' ,  'FTY2' , 128 , 2 )  
-      
+      vol_fy2b = ivol+3
+
+
       end
+      
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       Subroutine step_tracker()
@@ -141,7 +135,7 @@ c
       real*8 Cspead, Prop_med
       parameter (Cspead = 29.9792458, Prop_med=1.49)
       
-      if (lvolum(nlevel).eq.34.and.inwvol.ge.0.and.inwvol.le.2.and.
+      if (lvolum(nlevel).eq.vol_fy1b.and.inwvol.ge.0.and.inwvol.le.2.and.
      ,     HitFrontY1(NUMBER(NLEVEL)).ne.1) then 
 c     
 c     Entered to FY1 part of forwards Tracker
@@ -162,7 +156,7 @@ c
        endif
       endif
 ccccccccccccccccccccccccccccccccccccc
-      if (lvolum(nlevel).eq.35.and.inwvol.ge.0.and.inwvol.le.2) then 
+      if (lvolum(nlevel).eq.vol_fy2b.and.inwvol.ge.0.and.inwvol.le.2) then 
 c     
 c     Entered to FY2 part of forwards Tracker
 c     
@@ -184,7 +178,7 @@ c
       endif
 c         write(22,*)lvolum(nlevel)
 cccccccccccccccccccccccccccccccccccccccc
-      if (lvolum(nlevel).eq.33.and.inwvol.ge.0.and.inwvol.le.2) then 
+      if (lvolum(nlevel).eq.vol_fx1b.and.inwvol.ge.0.and.inwvol.le.2) then 
 c     
 c     Entered to FX1 part of forwards Tracker
 c     
