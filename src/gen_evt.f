@@ -343,8 +343,8 @@ c     enddo
 c
 c      rrand =700*rand() 700 is maximal crossection (normrate) check xsn if it's more than 700 change it.
 c
-       rrand =30*rand()
-       
+c       rrand =30*rand()
+       rrand=0.
 c       if()WRITE(*,*)XSN,RRAND
        if(normrate.le.rrand)goto 700
 c       WRITE(*,*)XSN,RRAND,"PASSED"
@@ -489,7 +489,6 @@ C Throw momentum, phi and cos(theta)
 c      p=5.9
 c      phi=0
 c      tht=0
-
       E = sqrt(p**2+mass(part)**2)
       vel = cc*p/E
 
