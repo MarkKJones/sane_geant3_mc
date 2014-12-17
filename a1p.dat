@@ -3,6 +3,8 @@ LOSS 2
 DRAY 0
 DCAY 1
 CKOV 1
+BREM 1
+PAIR 1
 C -- AUTO 1 ! Test local setting of STEMAX in ugeom.f OR 2/17/10
 AUTO 0
 CUTS  0.0001 0.001 0.01 0.01 0.01 0.001 0.001 0.001 0.001 0.01
@@ -15,15 +17,15 @@ FTYP 1
 C -- Scattering Angle of BETA (degrees), +ve is counterclockwise
 THTE 40.0
 C -- angle of target field, +ve is clockwise (typically -80 or -180)
-THTB -80.0
+THTB -180.0
 C -- beam energy [MeV] This variable was a parameter in sane.inc, in MeV!! (OR 11/06)
-EBEA 5900.0
+EBEA 4700.0
 C -- Ammonia densities & PF
-HYDDENS 0.168
-HELDENS 0.053
-NITDENS 0.779
-EFFDENS 0.915
-PCKFRC 1.000
+HYDDENS 0.091
+HELDENS 0.059
+NITDENS 0.426
+EFFDENS 0.575
+PCKFRC 0.596
 C -- Carbon Disc Offset (NK 07/15/10)
 CDISCOFF 0.3
 C -- Target Vertex_z Offset (NK 05/18/10)
