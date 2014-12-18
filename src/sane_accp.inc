@@ -32,40 +32,27 @@ C-- For theta_Bfield = -80
 *      parameter (p_min     =   0.18d0)
 *      parameter (p_max     =   4.5d0)
 
-cPI 0 setting
-c      parameter (theta_min =  20.00d0 )
-c      parameter (theta_max =  60.00d0 )
-c      parameter (phi_min   = 20.0d0 )
-c      parameter (phi_max   = 160.d0 )
+! Acceptance range modified by Jixie
+c   PI0 setting
+c      parameter (theta_min =  25.0d0 )
+c      parameter (theta_max =  60.0d0 )
+c      parameter (phi_min   =  50.0d0 )
+c      parameter (phi_max   = 130.0d0 )
 
-ccc   Electron setting
-c      parameter (theta_min =  25.00d0 )
-c      parameter (theta_max =  60.00d0 )
-c      parameter (phi_min   = 20.0d0 )
-c      parameter (phi_max   = 140.d0 )
-ccmkj
-      parameter (theta_min =  25.00d0 )
-      parameter (theta_max =  55.00d0 )
-      parameter (phi_min   = 40.0d0 )
-      parameter (phi_max   = 160.d0 )
+c   Electron setting
+c      parameter (theta_min =  25.0d0 )
+c      parameter (theta_max =  60.0d0 )
+c      parameter (phi_min   =  60.0d0 )
+c      parameter (phi_max   = 160.0d0 )
 
-
-C-- For theta_Bfield = -180
-C--      parameter (p_min     =   0.d0)
-C--      parameter (p_max     =   3.5d0)
+!By Jixie: combine e- and pi0
       parameter (p_min     =   0.5d0)
-      parameter (p_max     =   3.5d0)
-c      parameter (phi_min   = 40.0d0 )
-c      parameter (phi_max   = 160.d0 )
-c      parameter (theta_min   = 25.0d0 )
-c      parameter (theta_max   = 60.d0 )
-C-- Hovik's numbers
-*      parameter (p_min     =   0.4d0)
-*      parameter (p_max     =   4.5d0)
-*      parameter (phi_min   = 90.0d0 )
-*      parameter (phi_max   = 91.d0 )
-*      parameter (theta_min   = 20.0d0 )
-*      parameter (theta_max   = 55.d0 )
+      parameter (p_max     =   4.5d0)
+      parameter (theta_min =  25.0d0 )
+      parameter (theta_max =  60.0d0 )
+      parameter (phi_min   =  50.0d0 )
+      parameter (phi_max   = 160.0d0 )
+
 
 C-- Point setup
 *      parameter (p_min     =   0.49d0)

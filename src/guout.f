@@ -15,8 +15,6 @@
 
       real*4 q2orig,worig
       common /orig_kin/ q2orig,worig
-      real phi_test
-      common/PTEST/phi_test
       integer*4 cl,last_cl
       real*4 eng,d1,d2
       integer ihhit
@@ -330,11 +328,13 @@ C     ---- JDM
          enddo
 c         if (.not.(Eloss(4).eq.0.and.Eloss(1).eq.0.and.
 c     1        cwn_nb.eq.0.and.photCer.eq.0))then
-c         if(abs(ph-phi_test).gt.0.01)write(*,*)ph,phi_test
-c         write(*,*) ' xsn = ',xsn,nclust,cwn_E_r(1),ph,phi_test,cer_h(1)
-c         if(nclust.gt.0.and.abs(ph-90).lt.90.and.
-c     ,        cer_h(1).gt.0.and.
-c     ,        xsn.gt.0.and.cwn_E_r(1).gt.0.7)then
+
+
+c         write(*,*) ' xsn = ',xsn,nclust,cwn_E_r(1),ph,cer_h(1)
+! temporary comment out by ! to study acceptance  Jixie
+!         if(nclust.gt.0.and.abs(ph-90).lt.90.and.
+!     ,        and. cer_h(1).gt.0.and.
+!     ,        xsn.gt.0.and.cwn_E_r(1).gt.0.7)then
 c            write(*,*)nclust
 c            write(*,*) '# cerenkov photons:',photCer,photGood
 c            write(56,*)zz_t,nn_t,0.938**2+
@@ -344,7 +344,10 @@ c     ,           xsn,E_coor,THETA_C,-EE,th*180/3.14159
 c            write(*,*) 'pass  xsn = ',xsn,nclust,cer_h(1)
 c               write(*,*) 'ntuple = ',nclust,cwn_th_r(1),cwn_ph_r(1)
             call hfnt(nt_geant)
-c         endif
+
+!         endif
+
+
          call clear_cer()
          call clear_cal()
  
@@ -578,13 +581,7 @@ c            th = thr*180/3.14159
      ,        P_phi(10)*phr*thr**2)
          
       endif
-
-      phi=phi
 c      write(*,*)phr*180/3.141-90,phi,SANE_BETA_OMEGA
-   
-c      write(*,*)thr*180/3.1415926,th,phr*180/3.1415926
-c      print*,thr*(180.d0/3.1415926),phr*(180.d0/3.1415926),th,phi
-c     ,      ,SANE_BETA_OMEGA
 
       end
 ccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -672,10 +669,3 @@ cccccccccccc
          write(*,*)'CHECK NAN ',did
       endif
       end
-
-c      subroutine Blockzero
-c$$$      do i=1,32
-c$$$         do j=1,56
-c$$$            Energy(i,j)=0
-c$$$         enddo
-c$$$      enddo

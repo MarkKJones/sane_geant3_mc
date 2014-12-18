@@ -27,8 +27,7 @@ C
       integer*4 nvert,nt
       real*4 pps
       common/PPP/pps
-      integer ivpart
-      common/positron/ivpart
+
       integer ipos
 
       num_gc = 0
@@ -59,24 +58,22 @@ C
 
       part = particle
 
+c     ipos==0: pion0,  ipos==1: elec
       ipos=0
-      if (part.eq.5)then
-         
+
+      if (part.eq.5)then         
          call getarg(3,arg)
          read(arg,'(i1)') ipos
-c     ipos=0 -pion ipos=1 elec
       endif
+
       if(part.gt.20.or.part.le.0)then
 c      write(*,*) 'Events: ',numevts,'GenEvent',part
          call getarg(2,arg)
          read(arg,'(i1)') particle
          part=particle
-c         part = iipart
 c         write(*,*)particle
       endif
-c      part = 1+4*rand(0)
-c      write(*,*)part
-c      if(part.gt.4)part=4
+
       call gen_evt(ipos)
 c      write(*,*)'Event generated',2,numevts,part
      
@@ -96,7 +93,7 @@ c        IKINE = 1                 ! photon
       else if (part.eq.4) then
         IKINE = 8                 ! pi+
       else if (part.eq.5) then
-         if(ivpart.eq.1)then
+         if(ipos.eq.1)then
             IKINE = 3           !electron
          else
             IKINE = 7           ! pi0
@@ -136,8 +133,14 @@ C        PKINE(1) = 5.00
         EE = sqrt(pkine(1)**2+mass(part)**2)
         pp = pkine(1)
       endif
+
+! comment added by Jixie (from Mark's email)
+! 187.5 is the location of the target in the master
+! volume "EARM" . 237.5 is the half the size of the
+! master volume in z .
+! changed from 182.5 to 187.5 by Mark
       VERTEX(3) = uu(3)-187.5
-c      VERTEX(3) = uu(3)-237.5
+
       pps=pp
 c      write(*,*)Vertex
 c      write(*,*)'GUKINE CHECK 2'
@@ -152,7 +155,7 @@ C If the particle number is equal to the particle ID+100 the direction
 C cosines are distributed randomly, otherwise the angles theta and phi
 C given by the KINE data card a taken.
 C
-c         write(*,*)ivpart,IKINE,VERTEX(1),VERTEX(2),PKINE(1),PHI,THETA
+c         write(*,*)IKINE,VERTEX(1),VERTEX(2),PKINE(1),PHI,THETA
       IK    = IKINE
 C
 C Calculating the momementum in the LAB-frame

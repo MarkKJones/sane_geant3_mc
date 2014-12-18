@@ -15,6 +15,8 @@ C       Modified slightly by Glen Warren to compile under Linux (g77) Sept. 02
 C     Modified by Jixie Zhang:  
 C     IN S2PI(), add angle correction to wise result
 C     add flag USEFIT to tell whether to use scaling fit result or not
+C     Change the output 'epc_xn' unit from nb/(MeV/c)/sr to nb/(GeV/c)/sr such that it 
+C     is consistant with electron production xs
      
 
       IMPLICIT REAL*8 (A-H,O-Z) 
@@ -161,24 +163,24 @@ c            write(*,*)'PI=-',D2SC1*rad_l/100.*P,D2SC2*rad_l/100.*P
         TOTALE=TOTAL/AJ 
       END IF
 c      write(*,*) ' d2= ',D2QD,D2QF,D2DEL,D2SC,aj
-c      write(*,*)D2QD+D2QF+D2DEL+D2SC,AJ
-c      epc_func = total*1.d6   ! nanobarns / GeV/c / sr
+c      write(*,*) D2QD+D2QF+D2DEL+D2SC,AJ
+
       if(SCAL.eq.'Y')then
          epc_func = D2SC*P  ! nanobarns / GeV/c / sr
-         epc_xn= epc_func
+         epc_xn = epc_func
          pionwiser=D2SC*rad_l/100.*P/1.3 
          piondelta=(D2DEL)*rad_l/100.*P
 c         write(*,*)P,thp
       else
-         epc_func = D2SC*1.d6/AJ   ! nanobarns / GeV/c / sr
-         epc_xn= epc_func
+         epc_func = D2SC*1.d6/AJ   ! microbarns / GeV/c / sr
+         epc_xn = epc_func/1000.   ! nanobarns / GeV/c / sr
          pionwiser=D2SC*1.d6/AJ/1.3  
          piondelta=(D2DEL)*1.d6/AJ
-c         write(*,*)Aj
-         
+c         write(*,*)Aj         
       endif
+
 c      write(*,*) ' pion wiser = ',p,p*p/E,pionwiser
-c      write(18,*)E,TH,D2SC*1.d6,D2DEL*1.d6
+c      write(18,*) E,TH,D2SC*1.d6,D2DEL*1.d6
       return
       END 
 
@@ -835,6 +837,8 @@ C  TWO PION THR
 ! also modified wiser's result with  0.171 * 0.53 * TH**2 
 ! check https://hallcweb.jlab.org/experiments/sane/wiki/\
 ! index.php/Inclusive_pion_and_nucleon_electroproduction for details
+! the scalling fit is fitted to C12 data, therefore divided by 12 to 
+! get xs for each nucleon 
           IF (USEFIT.EQ.'Y')THEN
              CALL SCALINGFIT(P/1.E3,TH,F)
              f = f/12.
@@ -1072,9 +1076,15 @@ C  ENERGY
 	END
 
 *SCALEFIT
+! By Jixie @ Dec 10, 2014
+! Update parameter using the latest fitted parameters, E in unit of [ub/sr/(GeV/c)^2][c/Q]
+! https://userweb.jlab.org/~rondon/analysis/pairs/scalfit-photo.pdf
+! https://hallcweb.jlab.org/experiments/sane/wiki/index.php/Inclusive_pion_and_nucleon_electroproduction
 	SUBROUTINE SCALINGFIT(P,TH,F)
         REAL*8 P,TH,F
-        F = 11150*EXP(-8.67*P*SIN(TH))
+c        F = 9577*EXP(-8.759*P*SIN(TH))  !for pi-
+c        F = 11289*EXP(-8.536*P*SIN(TH)) !for pi+
+        F = 10219*EXP(-8.675*P*SIN(TH))  !for pi0
 c        PRINT *, 'P,TH,F',P,TH,p*sin(th),F
         RETURN
         END

@@ -109,7 +109,8 @@ c      write(*,*) 'volume =',lvolum(nlevel),destep
 c
 c     Check tracker and Lucite
 c
-         
+!Jixie: I commented 'call step_tracker()' out to see if it runs faster
+!it turns out that this is not the reason        
          call step_tracker()
          call step_lucite()
        

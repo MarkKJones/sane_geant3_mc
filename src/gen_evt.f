@@ -1,6 +1,7 @@
 * simulation of a1p experiment
 *
-
+! Comment added By Jixie: pos=0 -pion ipos=1 elec
+! ipos will be passed from caller
       subroutine gen_evt(ipos)
 
       implicit none
@@ -27,7 +28,7 @@
       real*4 q2ce,beame,eplo,epce,ephi,xblo,xbce,xbhi,wlo,wce,whi
       real*4 el_p0
       integer flg,ivpart
-      common/positron/ivpart
+
       data flg /1/
       real*4 q2orig,worig
       common /orig_kin/ q2orig,worig
@@ -36,8 +37,6 @@
       real sigelec,sigelech2,ratepi,e0
 
       real*8 rrand,rr
-      real phi_test
-      common/PTEST/phi_test
       integer ipos
       real*8 stots,sdelta,spion
       real*8 epc_func,z1,n1,ppp
@@ -59,33 +58,37 @@ C Now cycle through events
       if(target_type.eq.1)then
       tgt=5
       else
-c      tgt = nint(2*rand())+1
       temp_ran = rand()
       if ( temp_ran .le. .25) tgt=1
-      if ( temp_ran .gt. .25 .and. temp_ran .le. .5) tgt=2
-      if ( temp_ran .gt. .5.and. temp_ran .le. .75 ) tgt=3
+      if ( temp_ran .gt. .25 .and. temp_ran .le. .50) tgt=2
+      if ( temp_ran .gt. .50 .and. temp_ran .le. .75) tgt=3
       if ( temp_ran .gt. .75) tgt=4
       endif  
-c      tgt = nint((num_tgts-1)*rand())+1
+
       zz_t = z(tgt)
       nn_t = n(tgt)
       tgt_num = tgt
       tgt_num1 = tgt
       xsn=0
 c      write(*,*)tgt,z(tgt),n(tgt)
-c      call generate_event(u_vertex,E,part,tht_scat,phi_scat)
+
+! Comment added By Jixie: this part will generate eertex for 
+! electron,(part==5 and ipos==1) pi0 (part==5 and ipos==0), 
+! or other particles.
+
       if(part.eq.5)then
          el_p0=0 !rand()
          e0=E_beam/1000.
 c         write(*,*)ipos
          if(ipos.eq.1)then
+! Comment added By Jixie: this part is for electron
             ivpart=1
             call generate_event(u_vertex,E,ivpart,tht_scat,phi_scat
      +           ,deltaomega_scat,deltaE_scat)
-            Ef = -E
+            Ef = abs(E)
             nu = E0 - Ef
-            q2 = 2.d0*Ef*E0*(1-cos(tht_scat)   )
-c            write(*,*)Ef,E0,tht_scat*180/3.1415
+            q2 = 2.d0*Ef*E0*(1-cos(tht_scat))
+!            write(*,*)  'e-: ',Ef,E0,tht_scat*180/3.1415
 
             xb = q2 / 2.d0 / 0.938d0 / nu 
             wsq = 0.938d0**2 + 2.d0*0.938d0*nu - q2
@@ -98,8 +101,10 @@ c            write(*,*)Ef,E0,tht_scat*180/3.1415
             pp = sqrt(E**2-mass(ivpart)**2)
             th = tht_scat
             ph = phi_scat
-            EE = E
+            EE = abs(E)
+! By Jixie: This is a tricky way to check NAN
             if(SIGELEC.ne.SIGELEC)SIGELEC=0
+! By Jixie:  cross_section return xs in unit of nb/GeV/sr
             xsn = cross_section(7,7,u_vertex,1,f1,f2,q2,wsq,r)
 c            write(*,*)'cros ', xsn/14.,SIGELEC,f1/14.,f2/14.,W1,W2
             SIGELEC = 5.18 / (E0)**2 / SIN2**2 *
@@ -132,45 +137,37 @@ c               write(*,*)Ef,th_d,SIGELEC,SIGELECh2,xsn
 c            if(SIGELEC.ne.SIGELEC)goto 898
 c            write(*,*)'elec',E0,E,tht_scat*180./3.14159,phi_scat-90,W1,W2,SIGELEC 
          else
+! Comment added By Jixie: this part is for pi0
             ivpart=5
             call generate_event(u_vertex,E,ivpart,tht_scat,phi_scat
      +           ,deltaomega_scat,deltaE_scat)
-c            rl = (0.0515/2.) * 100.
-c            rl = (0.025+0.05/2.) * 100.
             rl = (0.0464/2.) * 100.
-c            rl = (0.01) * 100.
             th_deg=tht_scat*180./3.14159
 c
 c     PETERS WISER CODE
-cc
-c            E_beam=6000
-c            E=0.55
-c            th_deg=40.2
             CALL WISER_ALL_SIG (E_beam,E*1000,th_deg,rl,1,SIGPIP)
 c            write(*,*)SIGPIP
             CALL WISER_ALL_SIG (E_beam,E*1000.,th_deg,rl,2,SIGPIM)
 c            write(*,*)SIGPIM,(sigpip + sigpim)/2.
 
-            ratepi = (sigpip + sigpim)/2. * 2.*3.14159 *
-     >           sin(tht_scat) 
+            ratepi = (sigpip + sigpim)/2. * 2.*3.14159 * sin(tht_scat) 
             pp = sqrt(E**2-mass(ivpart)**2)
             ppp=pp*1000
 
             z1=1
             n1=0
             xsn=0
-c            Ppp=500
-c            th_deg=52
+!  By Jixie: epc now returns xs in unit of nb/(GeV/c)/sr
 c xsn is  pi0 xsn with Wiser's fit 
             stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'N')
-            xsn=epc_xn
+            xsn=epc_xn*0
 c            write(*,*) ' scal N  xsn = ',epc_xn*(zz_t+nn_t)
             stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'N')
             xsn=(xsn+epc_xn)* 2.*3.14159 *sin(tht_scat)*(zz_t+nn_t)
 c            write(*,*) ' scal Y  xsn = ',epc_xn*(zz_t+nn_t)
-c ratrad is pi0 xsn with Oscar's fit
+c xsnscal is pi0 xsn with Oscar's scaling fit
             stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'Y')
-            xsnscal=epc_xn
+            xsnscal=epc_xn*0
 c            write(*,*) 'OR  scal N  xsn = ',epc_xn*(zz_t+nn_t)
             stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'Y')
             xsnscal=(xsnscal+epc_xn)* 2.*3.14159 *sin(tht_scat)*(zz_t+nn_t)
@@ -179,7 +176,7 @@ c            write(*,*) 'OR  scal Y  xsn = ',epc_xn*(zz_t+nn_t)
             pp = sqrt(E**2-mass(ivpart)**2)
             th = tht_scat
             ph = phi_scat
-            EE = E
+            EE = abs(E)
             
 c
 c
@@ -188,10 +185,10 @@ c
 c
 c
 
-            Ef = -E
+            Ef = abs(E)
             nu = E0 - Ef
             q2 = 2.d0*Ef*E0*(1-cos(tht_scat)   )
-c            write(*,*)Ef,E0,tht_scat*180/3.1415
+!            write(*,*) 'pi0: ',Ef,E0,tht_scat*180/3.1415
 
             xb = q2 / 2.d0 / 0.938d0 / nu 
             wsq = 0.938d0**2 + 2.d0*0.938d0*nu - q2
@@ -206,24 +203,7 @@ c            write(*,*)Ef,E0,tht_scat*180/3.1415
            SIGELEC = 5.18 / (E0)**2 / SIN2**2 *
      >        (COS2 * W2 + 2. * SIN2 * W1)
      >        * 2.*3.14159 * sin(tht_scat)
-
-cccccccccccccc
-
-c           if(ee.lt.0.9)then
-c            write(*,*)ee,th*180/3.14159,ratepi,xsn, SIGELECh2,SIGELEC
-c         endif
-c
-c     FOr Pions ratrad is Delta contribution
-c
-c            if(piondelta/14..lt.2000.and.piondelta/14..gt.0)then
-c               ratrad=piondelta/14.
-c            endif
-            
-               
-c            write(*,*)"aaa ",E,ratrad,xsn,tht_scat,ratepi
-c            if(ratepi.eq.0)goto 898
-c            write(*,*)'pion',e0,E, tht_scat*180./3.14159,phi_scat-90,SIGPIP,SIGPIM,ratepi
-         endif
+        endif
 
  338     goto 339
       endif
@@ -234,7 +214,6 @@ c
 c
 c
 
-
       
       call generate_event(u_vertex,E,part,tht_scat,phi_scat
      +                   ,deltaomega_scat,deltaE_scat)
@@ -242,7 +221,7 @@ c      write(*,*)'Event generateg suc'
 c      write(*,*)E,part,tht_scat,phi_scat
 c      write(*,*)part,deltaE_scat 
 
-       Ef = -E
+       Ef = abs(E)
        nu = E_beam/1000.d0 - Ef
        q2 = 2.d0*Ef*E_beam/1000.d0*(1-cos(tht_scat)   )
        xb = q2 / 2.d0 / 0.938d0 / nu 
@@ -257,25 +236,17 @@ CCCCC Initialize
        normrate = 0.d0
        xsn = 0.d0   
        ratrad = 0.d0   
-c$$$       F1tot = 0.d0
-c$$$       Rtot = 0.d0
+
       pp = sqrt(E**2-mass(part)**2)
       th = tht_scat
       ph = phi_scat
-      EE = E
+      EE = abs(E)
       if(wsq.le.0) goto 700
 
 c      write(*,*)q2,wsq,tht_scat*180/3.14159,Ef,E_beam/1000.d0
 
-cc      xsn = cross_section(zz_t,nn_t,u_vertex,part,f1,f2)
-c      xsn = cross_section(zz_t,nn_t,u_vertex,part,f1,f2,q2,wsq)
       xsn = cross_section(zz_t,nn_t,u_vertex,part,f1,f2,q2,wsq,r)
-c      xsn=1
-c      if ( wsq .gt. 1.5*1.5 .and.   wsq .lt. 2.5*2.5
-c     >    .and. q2 .gt. 1.7 .and.  q2 .lt. 2.7) then
-c      if (E_beam.ge.4.7.and.E_beam.lt.4.8 .and. 
-c       if(   wsq .gt. 1.2*1.2 .and.   wsq .lt. 1.9*1.9
-c     >    .and. q2 .gt. 3.5 .and.  q2 .lt. 5.0) then
+
       if ( abs(e_beam/1000.-4.7) .lt. .1 .and. tgt .eq. 1) then
          call radiated_xn_h2_47(wsq,q2,ratrad)
        endif
@@ -311,91 +282,27 @@ c       if(xsn*lumin(tgt).gt.25000)write(*,*)tgt,xsn*lumin(tgt)
           keptevts =  keptevts + 1 !!Count these events for normalizing
 c$$$  write(*,*)keptevts
           
-          if(target_type.eq.0) then  
-c     do imat=2,4
-c     do tgt=1,3
-c     rate_norm(imat) = xsn*lumin(imat)*deltaE_scat*deltaomega_scat
-c             if(xsn*lumin(tgt).gt.1)write(*,*)tgt,xsn*lumin(tgt),zz_t
-c             write(*,*)zz_t,tgt,lumin(tgt),xsn*lumin(tgt)
-             rate_norm(tgt) = xsn*lumin(tgt)!*deltaE_scat*deltaomega_scat
-c     >            /3.0          !/ver(imat) !/keptevts
-c     normrate = rate_norm(imat)
-c     write(55,*)zz_t,nn_t,sqrt(wsq),lumin(tgt),xsn,-EE,th*180/3.14159
-c     write(*,*)sqrt(wsq),lumin(tgt),xsn,th*180/3.14159,-EE
-             
-             normrate = rate_norm(tgt)
-c     enddo
-          elseif(target_type.eq.1) then  
-!!!   This seems confused when going by tgt instead of imat, but imat always coincides with tgt     
-c     do imat=1,1
-c     rate_norm(imat) = xsn*lumin(imat)*deltaE_scat*deltaomega_scat
-             rate_norm(tgt) = xsn*lumin(tgt)!*deltaE_scat*deltaomega_scat
-c     >                      /1.0 !/ver(imat) !/keptevts
-c     normrate = rate_norm(imat)
-c     write(*,*)rate_norm(imat),xsn,lumin(imat),imat,tgt 
-c     write(*,*)rate_norm(tgt),xsn,lumin(tgt),tgt 
-c     write(*,*)rate_norm,xsn,lumin,tgt 
-             
-             normrate = rate_norm(tgt)
-c     enddo
-          endif      
+          rate_norm(tgt) = xsn*lumin(tgt)!*deltaE_scat*deltaomega_scat
+          normrate = rate_norm(tgt)
+c          write(*,*)rate_norm,xsn,lumin,tgt 
        endif      
-c
+
+! Comment Added by Jixie: the next few lines is trying to use rejection method to  
+! require the thrown event match the realistic distribution
+! please note that rrand should be a random number between 0 and maxXS, while
+! this maxXS varies from channel to channel. It is very hard to hard code this number
+! If this number is too large, it will cost too long to generate one event
+! If this number is too small, the simulation will not generate a realistic distribution 
+! For p(e,e')X,  maxXS=200
+! For p(e,pi0)X, maxXS=3.7E6 
+! If you are not sure what number maxXS should be, you should run the simulation with 
+! small amount of thrown events then plot xsn to check
+!
 c      rrand =700*rand() 700 is maximal crossection (normrate) check xsn if it's more than 700 change it.
 c
-c       rrand =30*rand()
-       rrand=0.
-c       if()WRITE(*,*)XSN,RRAND
-       if(normrate.le.rrand)goto 700
+!       rrand =200*rand()
+!       if(normrate.le.rrand)goto 700
 c       WRITE(*,*)XSN,RRAND,"PASSED"
-c      if(zz_t.eq.1.and.wsq.gt.0)then !!Want only protons 
-c$$$      F1tot = f1
-c$$$      Rtot = r
-cc      write(*,*)F1tot,Rtot,zz_t 
-c      endif 
-c      xsn=1
-
-c$$$      write(*,*)zz,nn,zz+nn,'Xsn=',xsn
-c      if(xsn.gt.20)then  
-CCCCC Compare with cross-sections from E94-110 
-c$$$c      if(th*180/3.14159.ge.20.and.th*180/3.14159.le.21)then
-c$$$      if(zz_t.eq.1)then
-c$$$c      if(th*180/3.14159.ge.38.74.and.th*180/3.14159.le.39.04)then !E=4.412GeV 
-c$$$      if(th*180/3.14159.ge.20.2.and.th*180/3.14159.le.20.6)then !E=5.498GeV
-c      if(th*180/3.14159.ge.10.45.and.th*180/3.14159.le.10.85)then !E=
-c      if(th*180/3.14159.le.20)then !E=4.63GeV
-c      if(th*180/3.14159.ge.28.0.and.th*180/3.14159.le.52.0)then !E=4.63GeV
-c      if(q2.ge.2.5.and.q2.le.3.5)then !E=4.63GeV
-c       write(*,*)xsn,q2,sqrt(wsq),th*180/3.14159,-EE,zz_t,tgt
-c      endif
-c      endif
-c$$$      endif
-
-
-c$$$***** Read in Kinematics Table print out F_1 and R
-c$$$c      open(9,file='SANE_readkin_Q24_all_021611.txt') !!11 
-c$$$      open(9,file='SANE_readkin_Q23_all_021611.txt') !!19
-c$$$c      open(9,file='SANE_readkin_Q24_all_021611.txt') !!35
-c$$$c      open(9,file='SANE_readkin_Q24_all_021611.txt') !!30
-c$$$      do ikin=1,19
-c$$$       read(9,*) q2ce,beame,eplo,epce,ephi,xblo,xbce,xbhi,whi,wce,wlo
-c$$$        if(zz_t.eq.1.and.F1tot.gt.0.d0.and.Rtot.gt.0.d0 !)then
-c$$$     ,     .and.q2.gt.(q2ce-0.5).and.q2.gt.(q2ce-0.5) 
-c$$$     ,     .and.Ef.gt.eplo.and.Ef.gt.ephi 
-c$$$cc     ,     .and.xb.gt.xblo.and.xb.lt.xbhi
-c$$$     ,     .and.sqrt(wsq).gt.whi.and.sqrt(wsq).lt.wlo )then  
-c$$$         write(*,*) q2ce,beame,eplo,epce,ephi,xblo,xbce,xbhi,wlo,wce,whi
-c$$$     ,             ,F1tot,Rtot 
-c$$$        endif
-c$$$      enddo
-c$$$      close(unit=9)
-
-CCCC Calculate Rates for charge normalizing
-c      write(*,*)normrate
-c       if(xsn.lt.1)then
-c       write(*,*)xsn,lumin,deltaE_scat,deltaomega_scat
-c     ,           ,normrate,tgt,zz_t,sqrt(wsq),q2,th*180/3.14159
-c       endif 
 
 
       if (part.eq.1.and.xsn.gt.0.d0) then
@@ -404,15 +311,13 @@ c        write(*,*)'Assym suc'
       else
         asym = 0.d0
       endif
+
  339   CONTINUE
-      phi_test=ph
 
       do k=1,6
         uu(k) = u_vertex(k)
       enddo
 
-      
-c         write(*,*)'Done gen'
       return
       end
 
@@ -431,7 +336,7 @@ C------------------------------------------------------------------------------
 *
 *             - all length (x,y,z,dl,l,...) are measured in [cm]
 *             - all velocities are measured in [cm/ns]
-*             - all angles are measured counter clock wise in [deg]
+*             - all argument angles are in [rad]
 *             - time is measured in [ns] 
 *             - the B field is measured in [T]
 * 
@@ -486,23 +391,18 @@ C Throw momentum, phi and cos(theta)
       phi = phi_min + (phi_max - phi_min)*rand()
       c = c_lo + (c_hi - c_lo)*rand()
       tht = acos(c)
-c      p=5.9
-c      phi=0
-c      tht=0
+
       E = sqrt(p**2+mass(part)**2)
       vel = cc*p/E
 
 CCC Add in deltaE and deltaomega for rates NK (11/09/10)
       fi_min = phi_min*d2r
       fi_max = phi_max*d2r
-c$$$      deltaomega = (fi_max - fi_min) * (c_hi - c_lo) 
-      deltaomega = ((phi/d2r + 20.d0) - (phi/d2r - 20.d0)) 
-     >            * (cos(tht/d2r + 1.5d0) - cos(tht/d2r - 1.5d0))
+      deltaomega = (fi_max - fi_min) * (c_hi - c_lo) 
 
       epmin = sqrt(p_min**2+mass(part)**2)
       epmax = sqrt(p_max**2+mass(part)**2)
-c$$$      deltaE = epmax - epmin
-      deltaE = (E + 0.1d0*E) - (E - 0.1d0*E)
+      deltaE = epmax - epmin
 
       if (part_charge(part).ne.0) E = E*part_charge(part)
 
@@ -510,23 +410,24 @@ C     Generate vertex in target cell.  Assume distribution is a cylinder
 C     of legnth cell_length and radius raster_radius.
 
       cell_z = cell_length*(rand()-0.5d0)
-      cell_rad = raster_radius*sqrt(rand())  ! throw radius squared
+
+! By Jixie: to get an uniform distribution, 
+! one should throw r in a distribution of y=kx, not y=sqrt(x)
+!      cell_rad = raster_radius*sqrt(rand())  ! throw radius squared      
+      cell_rad=raster_radius*sqrt(rand()**2+rand()**2)
+      do while (cell_rad.gt.raster_radius)
+        cell_rad=raster_radius*sqrt(rand()**2+rand()**2)
+      end do
+
       cell_phi = 360.d0*rand()*d2r
-C      cell_z = 0.d0
-C      cell_rad = 0.d0
-C      cell_phi = 0.d0
 
       v(1) = cell_rad*cos(cell_phi)+x_off
       v(2) = cell_rad*sin(cell_phi)+y_off
       v(3) = cell_z
-c      v(1) = 0
-c      v(2) = 0
-c      v(3) = -cell_length*10
-c      write(*,*)raster_xoff,raster_yoff
 
 C     Plot target x and y in ntuple in LAB frame NK HB 06/15/10
-c      write(*,*)x_off,y_off
-      SRx =  -v(2)
+!By Jixie: If SRx and SRy are in LAB system, they should be the following
+      SRx =   v(2)
       SRy =  -v(1)
 
 * generate angles in beam coordinate system
@@ -567,7 +468,6 @@ C------------------------------------------------------------------------------
         check_accp = .true.
       else
         check_accp = .false.
-C        check_accp = .true.
       endif
 
       return

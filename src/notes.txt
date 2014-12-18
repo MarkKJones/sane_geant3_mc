@@ -1,3 +1,52 @@
+By Jixie, Dec 2014
+
+1) Modified  generate_event() subroutine in gen_evt.f. 
+   Fixed raster generator bug. The old version set raster r follow 
+   y=sqrt(x) distribution. But this will not generate 
+   uniform x,y distributions. Also fixed is the horizontal raster position
+   in Lab frame, SRx. The bug was that it had a wrong sign.
+  
+
+2) Modified gen_evt.f gukine.f.  
+   Cleaned up a lot of unused test code. 
+   Removed common block variable ivpart. 
+   Added a lot of useful comments.
+
+3) There is a rejection method in gen_evt.f to shape the thrown events in
+   a realistic distribution. However, this method need an input value 
+   of the maximum XS. Currently this value is not right. Therefore I 
+   commented this part out. This value varies from channel to channel.
+   If one need to use this feature, he has to find out this value first  
+   then uncomment this block.
+///////////////////////////////////////////////////////////////////////////////////////////
+! Comment Added by Jixie: the next few lines is trying to use rejection method to  
+! require the thrown event match the realistic distribution
+! please note that rrand should be a random number between 0 and maxXS, while
+! this maxXS varies from channel to channel. It is very hard to hard code this number
+! If this number is too large, it will cost too long to generate one event
+! If this number is too small, the simulation will not generate a realistic distribution 
+! For p(e,e')X,  maxXS=200
+! For p(e,pi0)X, maxXS=3.7E6 
+! If you are not sure what number maxXS should be, you should run the simulation with 
+! small amount of thrown events then plot xsn to check
+!
+c      rrand =700*rand() 700 is maximal crossection (normrate) check xsn if it's more than 700 change it.
+c
+!       rrand =200*rand()
+!       if(normrate.le.rrand)goto 700
+///////////////////////////////////////////////////////////////////////////////////////////
+
+4) Modified generate_event() subroutine in gen_evt.f.  The variable 
+   deltaOmega is not calculate properly.
+
+5) Modified gen_evt.f, guout.f to remove comment block variable phi_test.
+
+6) Modified gukine.f, the vertex z was thorwn wrongly.
+
+
+
+-------------------------------------------------------------------------------
+
 Updated Makefile to hardwire CERNLIB to /site/cernlib/i386_rhel5/2005/lib
 Modify lucitehodo.f
      CALL GSPOS('HODO',1,'EARM',0.,0.,-424.+240.,  7,'ONLY')      
