@@ -37,13 +37,14 @@ C-- Variables related to the thrown particle
       real*4 SRx         ! Target x plot in LAB frame
       real*4 SRy         ! Target y plot in LAB frame
       real*4 normrate    ! Rates/yields
+      real*4 cwn_dedl          ! Energy loss in volumes following Eloss
 CC      real*4 F1tot   ! F1 
 CC      real*4 Rtot    ! R=sigma_L/sigma_T 
       
 
       COMMON /thrown/cwn_E,cwn_p,cwn_xsn,cwn_xsnr,cwn_xsnscal
      1               ,cwn_stopvol,cwn_th,cwn_ph,cwn_u(6),
-     1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate
+     1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate,cwn_dedl(6)
 CC     1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate,F1tot,Rtot
 
 
@@ -82,15 +83,13 @@ C-- detector volumes, Cerenkov photons in gas Cerenkov
       integer*4 max_blocks     ! Maximum number of Pb-Glass blocks changed to I4 OR 10/6
       parameter(max_blocks  = 2000)
 
-      real*4 cwn_dedl          ! Energy loss in volumes following Eloss
-      integer*4 cwn_cerphot    ! number of Cerenkov photons in gas Cerenkov
       integer*4 cwn_nb         ! number of blocks in which energy was deposited
       integer*4 cwn_bx         ! x index of block that fired
       integer*4 cwn_by         ! y index of block that fired
       integer*4 cwn_bg         ! number of Cernkov photons in block that fired
       real*4 cwn_be            ! energy deposited in block that fired
 
-      COMMON /blocks/cwn_dedl(6),cwn_cerphot,cwn_nb,cwn_bx(max_blocks),
+      COMMON /blocks/cwn_nb,cwn_bx(max_blocks),
      1               cwn_by(max_blocks),cwn_bg(max_blocks),cwn_be(max_blocks)
 
 
@@ -101,6 +100,7 @@ C-- ltrace code.  Do not confuse these arrays with the cg_ defined earlier.
       integer*2 max_cer          ! maximum number of Cerenkov photons 
       parameter(max_cer = 1000)
       
+      integer*4 cwn_cerphot    ! number of Cerenkov photons in gas Cerenkov
       integer*4 cwn_cergood      ! number of good photons
       real*4 cwn_cg_x            ! x position of good Cerenkov photons
       real*4 cwn_cg_y            ! y position

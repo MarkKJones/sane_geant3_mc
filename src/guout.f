@@ -314,18 +314,6 @@ C     ---- JDM
             cwn_dedl(i) = ELoss(i)
          enddo
          
-         cwn_nb = 0
-         do i=1,vert_blocks
-            do j=1,horz_blocks
-               if (dEBloc(i,j).gt.0.001 .or. photBloc(i,j).gt.0) then
-                  cwn_nb = cwn_nb + 1
-                  cwn_bx(cwn_nb) = i
-                  cwn_by(cwn_nb) = j
-                  cwn_bg(cwn_nb) = photBloc(i,j)
-                  cwn_be(cwn_nb) = dEBloc(i,j)
-               endif
-            enddo
-         enddo
 c         if (.not.(Eloss(4).eq.0.and.Eloss(1).eq.0.and.
 c     1        cwn_nb.eq.0.and.photCer.eq.0))then
 

@@ -294,6 +294,20 @@ c      write(*,*)'Entering CAL'
       nnclustA =0
       ixmax =0
       iymax =0
+      if (nclust .eq. 0) then
+         cwn_nb = 0
+         do i=1,56
+            do j=1,32
+               if (Energy(j,i).gt.0.001 ) then
+                  cwn_nb = cwn_nb + 1
+                  cwn_bx(cwn_nb) = j
+                  cwn_by(cwn_nb) = i
+                  cwn_bg(cwn_nb) = 0.
+                  cwn_be(cwn_nb) = Energy(j,i)
+               endif
+            enddo
+         enddo
+       endif
 c      write(*,*)'GUOUT CALLED',EE,part
 c      if(ixcell.ne.0)write(*,*)Energy(ixcell,iycell),th*180/3.141,ph
       if(EE.ne.EE)then
@@ -424,10 +438,10 @@ c         endif ! gt 0.010
          enddo
       enddo
 c      enddo
-      if (nclust .ge. 0 .and. abs(ymax-70) .lt. 10) then
+c      if (nclust .ge. 0 .and. abs(ymax-70) .lt. 10) then
 c         write(*,*) ' etot= ',etot,etot+ee,esum
 c            read(*,*) i
-         endif
+c         endif
 CCC Move to guout for looping over clusters
 c      do i=1,32
 c         do j=1,56
