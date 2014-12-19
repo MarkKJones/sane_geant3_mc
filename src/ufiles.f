@@ -69,6 +69,7 @@ c     ,     //'ixmax[1,32]:I,iymax[1,56]:I,eyx(5,5):R')
      1          //',SRx:R'
      1          //',SRy:R'
      1          //',normrate:R'
+     1          //',dedl(6):R'
 c$$$     1          //',F1tot:R'
 c$$$     1          //',Rtot:R'
      1                             )
@@ -94,15 +95,16 @@ c$$$     1          //',Rtot:R'
      1     //',cer_h(nclust):I'
      1                              )
       
-      call hbname(nt_geant,'BLOCK',cwn_dedl,
-     1            'dedl(6):R'
-     1          //',cerphot:I'
-     1          //',nb[0,2000]:I'
+      call hbname(nt_geant,'BLOCKS',cwn_nb,
+     1          'nb[0,2000]:I'
      1          //',bx(nb)[0,100]:I'
      1          //',by(nb)[0,100]:I'
      1          //',bg(nb):I'
      1          //',be(nb):R'
      1                             )
+
+      if ( 1 .eq. -1) then
+            
 
       call hbname(nt_geant,'PART',cwn_p_ng,
      1  'p_ng[0,20]:I'
@@ -174,11 +176,9 @@ c$$$     1  )
      1  //',adcHRigh(ihodohit):R')
 CC ---- End  hodoscopes
 
-cihodoHit, 
-c     ,	            pHodo(max_part), cxHodo(max_part), cyHodo(max_part), czHodo(max_part),
-c     ,	            xHodo(max_part), yHodo(max_part), zHodo(max_part),timeHodo(max_part), eLosHodo(max_part),
-c     ,	            tdcLeft(max_part),tdcRight(max_part),adcLeft(max_part),adcRight(max_part)
-      write(*,*) 'DONE INITIALIZING NTUPLE'
+      endif
+
+
 
       return
       END
