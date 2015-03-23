@@ -36,7 +36,6 @@ C
 *        istop=2
 *        write(*,*) 'stopping',getot
 *      endif
-      if(xsn.eq.0)goto 1102
       
       CALL UHTOC(KCASE,4,CHCASE,4)
 c      write(*,*)CHCASE
@@ -204,8 +203,6 @@ c      write(*,*)'gustep 1.4'
          endif
           CALL GDEBUG
        ENDIF
- 1102  continue
-c      write(*,*)'gustep 1.5'
 C
       END
 
