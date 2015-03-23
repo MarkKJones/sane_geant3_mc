@@ -40,15 +40,12 @@
       integer ipos
       real*8 stots,sdelta,spion
       real*8 epc_func,z1,n1,ppp
-      real*8 pionwiser,piondelta,epc_xn
-      common/PIONDELTA/pionwiser,piondelta,epc_xn
       real p1,p2,p3,th_d,radh2,xsnh2
 
 C Now cycle through events
       if(flg.eq.1) then
-      write(*,*) 'E_beam',E_beam,'ebeam2 = ',ebeam2
       E_beam =  ebeam2
-      write(*,*) 'E_beam',E_beam,'ebeam2 = ',ebeam2
+c      write(*,*) 'E_beam',E_beam,'ebeam2 = ',ebeam2,' part = ',part
       flg = 0
       endif
       
@@ -80,63 +77,6 @@ c      write(*,*)tgt,z(tgt),n(tgt)
          el_p0=0 !rand()
          e0=E_beam/1000.
 c         write(*,*)ipos
-         if(ipos.eq.1)then
-! Comment added By Jixie: this part is for electron
-            ivpart=1
-            call generate_event(u_vertex,E,ivpart,tht_scat,phi_scat
-     +           ,deltaomega_scat,deltaE_scat)
-            Ef = abs(E)
-            nu = E0 - Ef
-            q2 = 2.d0*Ef*E0*(1-cos(tht_scat))
-!            write(*,*)  'e-: ',Ef,E0,tht_scat*180/3.1415
-
-            xb = q2 / 2.d0 / 0.938d0 / nu 
-            wsq = 0.938d0**2 + 2.d0*0.938d0*nu - q2
-            CALL INEFT(Q2,sqrt(wsq),W1,W2,14.D0)
-            SIN2 = SIN(tht_scat/2)**2
-            COS2 = 1. - SIN2
-            SIGELEC = 5.18 / (E0)**2 / SIN2**2 *
-     >        (COS2 * W2 + 2. * SIN2 * W1)
-     >        * 2.*3.14159 * sin(tht_scat)
-            pp = sqrt(E**2-mass(ivpart)**2)
-            th = tht_scat
-            ph = phi_scat
-            EE = abs(E)
-! By Jixie: This is a tricky way to check NAN
-            if(SIGELEC.ne.SIGELEC)SIGELEC=0
-! By Jixie:  cross_section return xs in unit of nb/GeV/sr
-            xsn = cross_section(7,7,u_vertex,1,f1,f2,q2,wsq,r)
-c            write(*,*)'cros ', xsn/14.,SIGELEC,f1/14.,f2/14.,W1,W2
-            SIGELEC = 5.18 / (E0)**2 / SIN2**2 *
-     >        (COS2 * f2/14. + 2. * SIN2 * f1/14)
-     >        * 2.*3.14159 * sin(tht_scat)
-
-            xsnh2 = cross_section(1,0,u_vertex,1,f1,f2,q2,wsq,r)
-            SIGELECh2 = 5.18 / (E0)**2 / SIN2**2 *
-     >        (COS2 * f2 + 2. * SIN2 * f1)
-     >        * 2.*3.14159 * sin(tht_scat)
-
-c            write(*,*)Ef,th_d,SIGELEC,SIGELECh2
-            ratrad=0
-            if(e0.lt.5)then
-               th_d=tht_scat*180./3.14159
-               call radiated_xn_N_47(wsq,q2,ratrad)
-               call radiated_xn_h2_47(wsq,q2,radh2)
-               ratrad=3/17.*radh2+14/17.*ratrad
-c               write(*,*)Ef,th_d,ratrad,radh2
-            else 
-               call radiated_xn_N_59(wsq,q2,ratrad)
-               call radiated_xn_h2_59(wsq,q2,radh2)
-               ratrad=3/17.*radh2+14/17.*ratrad
-            endif
-
-
-            xsn=SIGELEC*14/17.+3/17.*SIGELECh2
-c               write(*,*)Ef,th_d,SIGELEC,SIGELECh2,xsn
-
-c            if(SIGELEC.ne.SIGELEC)goto 898
-c            write(*,*)'elec',E0,E,tht_scat*180./3.14159,phi_scat-90,W1,W2,SIGELEC 
-         else
 ! Comment added By Jixie: this part is for pi0
             ivpart=5
             call generate_event(u_vertex,E,ivpart,tht_scat,phi_scat
@@ -156,22 +96,12 @@ c            write(*,*)SIGPIM,(sigpip + sigpim)/2.
 
             z1=1
             n1=0
-            xsn=0
-!  By Jixie: epc now returns xs in unit of nb/(GeV/c)/sr
-c xsn is  pi0 xsn with Wiser's fit 
-            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'N')
-            xsn=epc_xn*0
-c            write(*,*) ' scal N  xsn = ',epc_xn*(zz_t+nn_t)
-            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'N')
-            xsn=(xsn+epc_xn)* 2.*3.14159 *sin(tht_scat)*(zz_t+nn_t)
-c            write(*,*) ' scal Y  xsn = ',epc_xn*(zz_t+nn_t)
-c xsnscal is pi0 xsn with Oscar's scaling fit
-            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'Y')
-            xsnscal=epc_xn*0
-c            write(*,*) 'OR  scal N  xsn = ',epc_xn*(zz_t+nn_t)
-            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'Y')
-            xsnscal=(xsnscal+epc_xn)* 2.*3.14159 *sin(tht_scat)*(zz_t+nn_t)
-c            write(*,*) 'OR  scal Y  xsn = ',epc_xn*(zz_t+nn_t)
+            xsn=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'N') ! EPC photoproduction
+            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'N') ! EPC electro production
+            xsn=(xsn+stots)*(zz_t+nn_t)
+            xsnscal=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'Y') ! OR's photoproduction
+            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'Y') ! OR's electroproduction
+            xsnscal=(xsnscal+stots)*(zz_t+nn_t)
 
             pp = sqrt(E**2-mass(ivpart)**2)
             th = tht_scat
@@ -203,9 +133,9 @@ c
            SIGELEC = 5.18 / (E0)**2 / SIN2**2 *
      >        (COS2 * W2 + 2. * SIN2 * W1)
      >        * 2.*3.14159 * sin(tht_scat)
-        endif
-
- 338     goto 339
+       if(xsn.le.0.0)goto 700
+       if(xsnscal.le.0.0)goto 700
+      goto 339
       endif
 c
 c
@@ -214,7 +144,6 @@ c
 c
 c
 
-      
       call generate_event(u_vertex,E,part,tht_scat,phi_scat
      +                   ,deltaomega_scat,deltaE_scat)
 c      write(*,*)'Event generateg suc'
@@ -243,7 +172,6 @@ CCCCC Initialize
       EE = abs(E)
       if(wsq.le.0) goto 700
 
-c      write(*,*)q2,wsq,tht_scat*180/3.14159,Ef,E_beam/1000.d0
 
       xsn = cross_section(zz_t,nn_t,u_vertex,part,f1,f2,q2,wsq,r)
 
@@ -259,6 +187,9 @@ c      write(*,*)q2,wsq,tht_scat*180/3.14159,Ef,E_beam/1000.d0
       if ( abs(e_beam/1000.-4.7) .lt. .1 .and. tgt .eq. 4) then
          call radiated_xn_N_47(wsq,q2,ratrad)
        endif
+      if ( abs(e_beam/1000.-4.7) .lt. .1 .and. tgt .eq. 5) then
+         call radiated_xn_N_47(wsq,q2,ratrad)
+       endif
       if ( abs(e_beam/1000.-5.9) .lt. .1 .and. tgt .eq. 1) then
          call radiated_xn_h2_59(wsq,q2,ratrad)
        endif
@@ -269,6 +200,9 @@ c      write(*,*)q2,wsq,tht_scat*180/3.14159,Ef,E_beam/1000.d0
          call radiated_xn_N_59(wsq,q2,ratrad)
        endif
       if ( abs(e_beam/1000.-5.9) .lt. .1 .and. tgt .eq. 4) then
+         call radiated_xn_N_59(wsq,q2,ratrad)
+       endif
+      if ( abs(e_beam/1000.-5.9) .lt. .1 .and. tgt .eq. 5) then
          call radiated_xn_N_59(wsq,q2,ratrad)
        endif
 c      write(*,*)'rc-intrpl',wsq,q2,ratrad,tgt 
@@ -284,7 +218,6 @@ c$$$  write(*,*)keptevts
           
           rate_norm(tgt) = xsn*lumin(tgt)!*deltaE_scat*deltaomega_scat
           normrate = rate_norm(tgt)
-c          write(*,*)rate_norm,xsn,lumin,tgt 
        endif      
 
 ! Comment Added by Jixie: the next few lines is trying to use rejection method to  
@@ -317,7 +250,6 @@ c        write(*,*)'Assym suc'
       do k=1,6
         uu(k) = u_vertex(k)
       enddo
-
       return
       end
 
