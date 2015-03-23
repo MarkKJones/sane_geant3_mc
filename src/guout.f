@@ -62,7 +62,7 @@ C Fill the total energy of the event in the histogram
 C
       
 c      write(*,*)'volume=',lvolum(nlevel),nlevel,vect(1),vect(2),vect(3),uu(1),uu(2),uu(3)
-      if(xsn.eq.0)goto 1101
+c      if(xsn.eq.0)goto 1101
       cwn_p_ne =0
       cwn_p_ng =0
       cwn_p_np =0
@@ -88,17 +88,6 @@ c           write(*,*)gc_x(i),gc_y(i),gc_eng(i),cwn_p_ne
           cwn_p_ee(cwn_p_ne) = gc_eng(i)
         endif
       enddo
-c      if(part.gt.20.or.part.le.0)then
-c      write(*,*) 'Events: ',numevts,'GenEvent',part
-         call getarg(2,arg)
-         read(arg,'(i1)') particle
-         part=particle
-c         write(*,*)EE,pp,part,tgt_num,tgt_num1
-         if(tgt_num.ne.tgt_num1.and.tgt_num.gt.200)tgt_num=tgt_num1
-         if(abs(tgt_num).gt.200)goto 1101
-c         part = iipart
-c         write(*,*)particle
-c      endif
 
 c      write(*,*)'part=',part
       cwn_E    = EE
@@ -119,14 +108,13 @@ c      write(*,*)'CR in NTUPLE ',xsn
       cwn_stopvol = float(lvolum(nlevel))
       cwn_th   = th
       cwn_ph   = ph
-      cwn_cerphot = asym
 
       call NANcheckF(xsn,12)
       call NANcheckF(ratrad,13)
       call NANcheckF(asym,14)
 
 C      write(*,*)0,th*180/3.141,ph-90
-*      cwn_cergood = photGood
+      cwn_cergood = photGood
 c      write(*,*) ' photgood = ',photGood 
 
 C    --- Front and Lucite Hososcopes -JDM - 6/20/07
@@ -218,6 +206,8 @@ c     write(*,*)2,V_coor_r,CoorE
             cwn_z_ur(iclust)=Z_coor
 c            write(*,*) ' call digi_cer'
             call digi_cer(iclust)
+            cwn_cerphot(iclust) = photCer
+            cwn_cernpe(iclust) = photGood ! npe
             
 c      if(X_coor_r.gt.253.5.and.Y_coor_r.gt.12)then
 c       write(*,*) X_coor_r  

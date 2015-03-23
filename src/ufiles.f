@@ -92,7 +92,8 @@ c$$$     1          //',Rtot:R'
      1     //',z_ur(nclust):R'
      1     //',th_ucr(nclust):R'
      1     //',ph_ucr(nclust):R'
-     1     //',cer_h(nclust):I'
+     1     //',cer_phot(nclust):I'
+     1     //',cer_npe(nclust):I'
      1                              )
       
       call hbname(nt_geant,'BLOCKS',cwn_nb,
@@ -102,9 +103,6 @@ c$$$     1          //',Rtot:R'
      1          //',bg(nb):I'
      1          //',be(nb):R'
      1                             )
-
-      if ( 1 .eq. -1) then
-            
 
       call hbname(nt_geant,'PART',cwn_p_ng,
      1  'p_ng[0,20]:I'
@@ -121,6 +119,8 @@ c$$$     1          //',Rtot:R'
      1  //',p_pe(p_np):R'
      1  )
 
+      if ( 1 .eq. -1) then
+            
       call hbname(nt_geant,'CERENKOV',cwn_cergood,
      1  'cergood[0,1000]:I'
      1  //',cg_x(cergood):R'
@@ -128,6 +128,8 @@ c$$$     1          //',Rtot:R'
      1  //',cg_xp(cergood):R'
      1  //',cg_yp(cergood):R'
      1  )
+
+
 c$$$      
 c$$$C     ---   Hodoscopes - JDM - 6/20/07
 c$$$      

@@ -68,12 +68,14 @@ C-- Variables related to the recon particle
       real*4 cwn_th_ucr(5)    ! uncorrected polar angle w.r.t. beam 
       real*4 cwn_ph_ucr(5)    ! uncorrected azimuthal angle w.r.t. beam
       integer cer_h(5)        ! Cerenkov status
+      integer cwn_cerphot(5)        ! Cerenkov photons
+      integer cwn_cernpe(5)        ! Cerenkov photo-electrons
 
       COMMON /RECON/nclust,ncell,cwn_E_m,cwn_E_r,cwn_th_r,cwn_ph_r,
      1              cwn_x_r,cwn_y_r,cwn_z_r,
      1              cwn_Q2_r,cwn_xb_r,cwn_W_r,
      1              cwn_x_ur,cwn_y_ur,cwn_z_ur,
-     1              cwn_th_ucr,cwn_ph_ucr,cer_h
+     1              cwn_th_ucr,cwn_ph_ucr,cwn_cerphot,cwn_cernpe
 
 
 
@@ -100,7 +102,6 @@ C-- ltrace code.  Do not confuse these arrays with the cg_ defined earlier.
       integer*2 max_cer          ! maximum number of Cerenkov photons 
       parameter(max_cer = 1000)
       
-      integer*4 cwn_cerphot    ! number of Cerenkov photons in gas Cerenkov
       integer*4 cwn_cergood      ! number of good photons
       real*4 cwn_cg_x            ! x position of good Cerenkov photons
       real*4 cwn_cg_y            ! y position
