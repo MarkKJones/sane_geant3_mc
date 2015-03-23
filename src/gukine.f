@@ -61,10 +61,10 @@ C
 c     ipos==0: pion0,  ipos==1: elec
       ipos=0
 
-      if (part.eq.5)then         
-         call getarg(3,arg)
-         read(arg,'(i1)') ipos
-      endif
+c      if (part.eq.5)then         
+c         call getarg(3,arg)
+c         read(arg,'(i1)') ipos
+c      endif
 
       if(part.gt.20.or.part.le.0)then
 c      write(*,*) 'Events: ',numevts,'GenEvent',part
@@ -93,11 +93,13 @@ c        IKINE = 1                 ! photon
       else if (part.eq.4) then
         IKINE = 8                 ! pi+
       else if (part.eq.5) then
-         if(ipos.eq.1)then
-            IKINE = 3           !electron
-         else
-            IKINE = 7           ! pi0
-         endif
+c         if(ipos.eq.1)then
+c            IKINE = 3           !electron
+c         else
+c            IKINE = 7           ! pi0
+c         endif
+         ipos=0
+           IKINE = 7           ! pi0 
       else if (part.eq.6) then
         IKINE = 14                ! p
       else if (part.eq.7) then
