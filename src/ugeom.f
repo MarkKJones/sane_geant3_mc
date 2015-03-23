@@ -352,9 +352,8 @@ C      CALL GSVOLU( 'FESH' , 'BOX ' ,NMED_Fe, PAR , 3 , IVOL )
       PAR(1) = cal_width/2.
       PAR(2) = cal_height/2.
       PAR(3) = gain_thk
-      CALL GSVOLU( 'GAIN' , 'BOX ' ,NMED_Gain, PAR , 3 , IVOL ) ! vol 3 
+      CALL GSVOLU( 'GAIN' , 'BOX ' ,NMED_Vac, PAR , 3 , IVOL ) ! vol 3 
       vol_gain = IVOL
-
 
       PAR(1) = cal_width/2.*1.2
       PAR(2) = cal_height/2.*1.2
@@ -558,7 +557,7 @@ C   Position Detectors
       CALL GSPOS('CBKW',1,'CGAS',x,y,+cer_length/2.,   0,'ONLY')
 
 C      CALL GSPOS('FESH',1,'EARM',x,y,z0+cal_drift-5,0,'ONLY') ! Iron Shield test, JDM
-c      CALL GSPOS('GAIN',1,'EARM',x,y,z0+cal_drift-gain_thk*2., 0,'ONLY')
+      CALL GSPOS('GAIN',1,'EARM',x,y,z0+cal_drift-gain_thk*2., 0,'ONLY')
 c      CALL GSPOS('VETO',1,'EARM',x,y,z0+cal_drift+2.*cal_depth/2.+30.,0,
 c     + 'ONLY')
 

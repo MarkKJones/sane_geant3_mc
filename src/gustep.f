@@ -86,8 +86,8 @@ C     ,lvolu m(nlevel),numed,ingoto,ipart
 
 *      IP = GKIN(5,)
 
-      if (lvolum(nlevel).eq.vol_gain.and.inwvol.eq.2) then ! exiting Gain Sheet
-*        write(*,*) 'leaving Gain Sheet',ipart,vect
+      if (lvolum(nlevel).eq.vol_gain.and.inwvol.eq.1) then ! entering Gain Sheet
+c        write(*,*) 'entering Gain Sheet',ipart,vect,getot
        if ((ipart.ge.1 .and. ipart.le.3) .and.getot.gt.0.020 .and.
      2      vect(6).gt.0.5 ) then
             num_gc = num_gc + 1
@@ -95,7 +95,7 @@ C     ,lvolu m(nlevel),numed,ingoto,ipart
             gc_y(num_gc) = vect(2)
             gc_eng(num_gc) = getot
             gc_part(num_gc) = ipart
-*            write(*,*) 'Recorded Particle leaving Gain Sheet',ipart,getot
+c            write(*,*) 'Recorded Particle entering Gain Sheet',ipart,getot
         endif
       endif
 c      write(*,*)'gustep 1.2'
@@ -124,6 +124,7 @@ c
 *        write(*,*) 'Entering Magnet',ipart,vect
 c        istop=2                 ! Kill trace
         magcnt = magcnt + 1
+c        if (magcnt .gt. 100) istop=2
 C        write(*,*) 'incremented to ', magcnt
       else
 
@@ -162,7 +163,7 @@ c           write(*,*) ' eloss7 = ',eloss(7),lvolum(nlevel)
            Eloss(8) = eloss(8) + destep
         elseif (lvolum(nlevel).eq.39) then
            Eloss(9) = eloss(9) + destep
-        else
+        else           
            Eloss(10) = eloss(10) + destep
         endif
 
