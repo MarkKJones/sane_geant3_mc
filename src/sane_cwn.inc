@@ -27,6 +27,8 @@ C-- Variables related to the thrown particle
       real*4 cwn_xsn     ! cross section
       real*4 cwn_xsnr     ! radiated cross section
       real*4 cwn_xsnscal     ! Oscar pi0 scaling cross section
+      real*4 cwn_xsngp     ! pi0 photo-producion
+      real*4 cwn_xsnep     ! pi0 electroprod
       real*4 cwn_stopvol    ! volume number where track stopped
       real*4 cwn_th      ! polar angle w.r.t. beam
       real*4 cwn_ph      ! azimuthal angle w.r.t. beam
@@ -42,8 +44,8 @@ CC      real*4 F1tot   ! F1
 CC      real*4 Rtot    ! R=sigma_L/sigma_T 
       
 
-      COMMON /thrown/cwn_E,cwn_p,cwn_xsn,cwn_xsnr,cwn_xsnscal
-     1               ,cwn_stopvol,cwn_th,cwn_ph,cwn_u(6),
+      COMMON /thrown/cwn_E,cwn_p,cwn_xsn,cwn_xsnr,cwn_xsngp,
+     1               cwn_xsnep,cwn_stopvol,cwn_th,cwn_ph,cwn_u(6),
      1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate,cwn_dedl(6)
 CC     1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate,F1tot,Rtot
 

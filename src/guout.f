@@ -98,6 +98,8 @@ c      write(*,*)z(tgt_num),n(tgt_num)
       cwn_n    = n(tgt_num)
       cwn_xsn  = xsn
       cwn_xsnscal=xsnscal
+      cwn_xsngp=xsn_gprod
+      cwn_xsnep=xsn_eprod
       if(ratrad.eq.ratrad)then
          cwn_xsnr  = ratrad
       else
@@ -114,8 +116,6 @@ c      write(*,*)'CR in NTUPLE ',xsn
       call NANcheckF(asym,14)
 
 C      write(*,*)0,th*180/3.141,ph-90
-      cwn_cergood = photGood
-c      write(*,*) ' photgood = ',photGood 
 
 C    --- Front and Lucite Hososcopes -JDM - 6/20/07
       call digi_tracker()

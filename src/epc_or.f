@@ -1,5 +1,26 @@
       real*8 function epc_func(EBEAM,Z1,N1,FERMI1,MPI,PART,SCAL1,P,THP,
      + rad_l,USEFIT1)
+c
+c
+c  ebeam = incident beam energy ( MeV)
+c  Z1 = target Z
+c  N1 = target N
+c  FERMI1 = 'N' choose subroutines KINE_OR or PART_OR 
+c          = "Y" choose subroutine KINEDEL or PARTDEL ( for Delta)
+c  MPI = "Y" use multipion formulas 
+c  PART = "P" sets AN=N/3.d0+2.d0*Z/3.d0 MP = proton mass  IP=1   IP is flag for hadron or pion production
+c         "N" sets AN=Z/3.d0+2.d0*N/3.d0 MP = neutron mass  IP=-1
+c         "PI+" sets AN=Z/3.d0 MP = AMP pi+ mass  IP=2
+c         "PI-" sets AN=N/3.d0 MP = AMP pi+ mass IP=2
+c         "PI0" sets AN=2.d0*(N+Z)/3.d0 MP = MPI0 IP=0
+c   SCAL1= "Y" photo production
+c          "N" electro production
+c   P = Particle Momentum (MeV/c)
+c   THP = Particle outgoing angle (deg)
+c   rad_l = radiation lenght of target (%)
+c   USEFIT1 = "Y" then use Oscar's fit in S2PI subroutine instead of Wiser
+c
+c
 
 CGAW      PROGRAM EPC
 
@@ -31,8 +52,6 @@ C     is consistant with electron production xs
       COMMON/M/Z,N
       COMMON/KF/E1
       DATA AM/938.28/,AMP/139.6/,MPI0/135.9/,MN/939.56/
-      real*8 pionwiser,piondelta,epc_xn
-      common/PIONDELTA/pionwiser,piondelta,epc_xn
 
 c      write(*,*)EBEAM,Z1,N1,FERMI1,MPI,PART,P,THP
 
@@ -102,8 +121,6 @@ c         write(*,*)PART,' ',AM,MP
           CALL DEP_OR(E1,TP,TH,IP,D2QD)
 	  IF(SCAL.NE.'Y') THEN
             D2QD=D2QD*AJ
-	  END IF
-	  IF(SCAL.NE.'Y') THEN
             CALL EP_OR(E1,TP,TH,D2QF)
             D2QF=D2QF*AJ
 	  END IF
@@ -166,17 +183,9 @@ c      write(*,*) ' d2= ',D2QD,D2QF,D2DEL,D2SC,aj
 c      write(*,*) D2QD+D2QF+D2DEL+D2SC,AJ
 
       if(SCAL.eq.'Y')then
-         epc_func = D2SC*P  ! nanobarns / GeV/c / sr
-         epc_xn = epc_func
-         pionwiser=D2SC*rad_l/100.*P/1.3 
-         piondelta=(D2DEL)*rad_l/100.*P
-c         write(*,*)P,thp
+         epc_func = rad_l/100.*D2SC*(P**2/E*1e-3) ! bremstrahlung photo-production xn  ubarns / GeV/c / sr 
       else
-         epc_func = D2SC*1.d6/AJ   ! microbarns / GeV/c / sr
-         epc_xn = epc_func/1000.   ! nanobarns / GeV/c / sr
-         pionwiser=D2SC*1.d6/AJ/1.3  
-         piondelta=(D2DEL)*1.d6/AJ
-c         write(*,*)Aj         
+         epc_func = D2SC   !electro-production  microbarns / GeV/c / sr
       endif
 
 c      write(*,*) ' pion wiser = ',p,p*p/E,pionwiser
@@ -833,18 +842,10 @@ C  TWO PION THR
           CALL VTP_OR(AM,AMP,E1,W,TP,TH,GN)
 !	  WRITE(*,100) I,AM,AMP,E1,W,DW,THR,GN
 100	FORMAT(I4,2F8.1,5G12.3)
-! By Jixie: Add flag to use scalingfit
-! also modified wiser's result with  0.171 * 0.53 * TH**2 
-! check https://hallcweb.jlab.org/experiments/sane/wiki/\
-! index.php/Inclusive_pion_and_nucleon_electroproduction for details
-! the scalling fit is fitted to C12 data, therefore divided by 12 to 
-! get xs for each nucleon 
           IF (USEFIT.EQ.'Y')THEN
-             CALL SCALINGFIT(P/1.E3,TH,F)
-             f = f/12.
+             CALL SCALINGFIT(P/1.E3,TH,F) ! F is cross section
           ELSE
              CALL WISER(W/1.E3,P/1.E3,TH,F)
-!             F = F * 0.171 * 0.53 * TH**2 ;
           END IF
 !	  PRINT *,'P,W,GN,F',P,W,GN,F
           SUM=SUM+GN*F*DW 
@@ -854,12 +855,12 @@ c             write(*,*) ' scal fit = ',P,TH,F,sumbr
         END IF
       END DO
 	IF(SCAL.EQ.'Y') THEN
-	D2SC=SUMBR
+	D2SC=SUMBR  ! bremstrahlung photo-production xn = Ed^3sigma/dp^3 ubarns/sr/(Gev/c) per equivalent quanta
 	ELSE
-	D2SC=SUM*P**2/E*1.E-6
+	D2SC=SUM*(P**2/E*1e-3) ! electro-production converts to d^2sigma/domega/dp microbarns/sr/(GeV/c)
 c        write(*,*)'W',Sum,CPF,D2SC*CPF*1.E+6
 	END IF
-	D2SC = D2SC*CPF
+	D2SC = D2SC*CPF  
 c	write(*,*)'D2PI',D2SC,CPF
       RETURN
     2 D2SC=0. 
@@ -1078,13 +1079,17 @@ C  ENERGY
 *SCALEFIT
 ! By Jixie @ Dec 10, 2014
 ! Update parameter using the latest fitted parameters, E in unit of [ub/sr/(GeV/c)^2][c/Q]
-! https://userweb.jlab.org/~rondon/analysis/pairs/scalfit-photo.pdf
+! https://userweb.jlab.org/~rondon/analysis/pairs/scalfit-photo.pdf for pi+/pi-
+! https://userweb.jlab.org/~rondon/analysis/pairs/scal-fit.pdf for pi0
 ! https://hallcweb.jlab.org/experiments/sane/wiki/index.php/Inclusive_pion_and_nucleon_electroproduction
 	SUBROUTINE SCALINGFIT(P,TH,F)
         REAL*8 P,TH,F
+c  P is momentum in GeV/c
+c  Th is angle in radians
+c  F is photo production cross section = E d^3sigma/d^3p microbarns/sr/(GeV/c)(c/Q)  Q=equivalent quanta
 c        F = 9577*EXP(-8.759*P*SIN(TH))  !for pi-
 c        F = 11289*EXP(-8.536*P*SIN(TH)) !for pi+
-        F = 10219*EXP(-8.675*P*SIN(TH))  !for pi0
+        F = 10219*EXP(-8.675*P*SIN(TH))/12.  !for pi0 on 12C divied by 12 for per nucleon cross section
 c        PRINT *, 'P,TH,F',P,TH,p*sin(th),F
         RETURN
         END

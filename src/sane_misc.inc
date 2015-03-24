@@ -30,11 +30,12 @@ C-- more intelligently.
 C-- miscellaneous variables related to SANE physics geant that are not
 C-- part of the beam line simulations package.
 
-      real*4 EE,pp,xsn,ratrad,xsnscal,uu(6),vv(6),th,ph,asym
+      real*4 EE,pp,xsn,ratrad,xsnscal,xsn_gprod,xsn_eprod,uu(6),vv(6),th,ph,asym
       real rate
       integer*4 part,zz_t,nn_t,tgt_num,tgt_num1
 
-      COMMON /UEVENT/EE,pp,part,zz_t,nn_t,xsn,xsnscal,ratrad,uu,vv,th,ph,asym,tgt_num
+      COMMON /UEVENT/EE,pp,part,zz_t,nn_t,xsn,xsn_gprod,xsn_eprod
+     >,ratrad,uu,vv,th,ph,asym,tgt_num
       COMMON /URATE/rate
       COMMON/TARGET_NUM/tgt_num1
 

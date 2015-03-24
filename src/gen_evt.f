@@ -33,7 +33,7 @@
       real*4 q2orig,worig
       common /orig_kin/ q2orig,worig
       
-      real*8 w2,w1,sin2,cos2,rl,th_deg,sigpip,sigpim
+      real*8 w2,w1,sin2,cos2,rl,th_deg,sigpip,sigpim,rl_ext,rl_int
       real sigelec,sigelech2,ratepi,e0
 
       real*8 rrand,rr
@@ -41,6 +41,7 @@
       real*8 stots,sdelta,spion
       real*8 epc_func,z1,n1,ppp
       real p1,p2,p3,th_d,radh2,xsnh2
+      character*1 photo_prod
 
 C Now cycle through events
       if(flg.eq.1) then
@@ -48,7 +49,16 @@ C Now cycle through events
 c      write(*,*) 'E_beam',E_beam,'ebeam2 = ',ebeam2,' part = ',part
       flg = 0
       endif
-      
+c     
+c  random choose either electro or photo production for pi0 
+      if (part .eq. 5 .and. rand() .lt. 0.5) then
+         photo_prod='Y'
+         else
+         photo_prod='N'
+         endif
+               xsn_eprod = 0.
+               xsn_gprod = 0.
+c      
  700  continue
 
 
@@ -69,78 +79,42 @@ c      write(*,*) 'E_beam',E_beam,'ebeam2 = ',ebeam2,' part = ',part
       xsn=0
 c      write(*,*)tgt,z(tgt),n(tgt)
 
-! Comment added By Jixie: this part will generate eertex for 
-! electron,(part==5 and ipos==1) pi0 (part==5 and ipos==0), 
-! or other particles.
-
-      if(part.eq.5)then
-         el_p0=0 !rand()
-         e0=E_beam/1000.
-c         write(*,*)ipos
 ! Comment added By Jixie: this part is for pi0
+      if(part.eq.5)then
+         e0=E_beam/1000.
             ivpart=5
             call generate_event(u_vertex,E,ivpart,tht_scat,phi_scat
      +           ,deltaomega_scat,deltaE_scat)
-            rl = (0.0464/2.) * 100.
+            rl_int = 2.*(1./137.)*(1./3.14159)*log(E_beam/.511)
+            rl_ext = 4./3.*(0.0464/2.)
+            rl= (rl_ext+rl_int)*100 ! epc_func needs %
             th_deg=tht_scat*180./3.14159
-c
-c     PETERS WISER CODE
-            CALL WISER_ALL_SIG (E_beam,E*1000,th_deg,rl,1,SIGPIP)
-c            write(*,*)SIGPIP
-            CALL WISER_ALL_SIG (E_beam,E*1000.,th_deg,rl,2,SIGPIM)
-c            write(*,*)SIGPIM,(sigpip + sigpim)/2.
-
-            ratepi = (sigpip + sigpim)/2. * 2.*3.14159 * sin(tht_scat) 
             pp = sqrt(E**2-mass(ivpart)**2)
             ppp=pp*1000
 
             z1=1
             n1=0
-            xsn=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'N') ! EPC photoproduction
-            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'N') ! EPC electro production
-            xsn=(xsn+stots)*(zz_t+nn_t)
-            xsnscal=epc_func(E_BEAM,z1,0,'N','Y','PI0','N',Ppp,TH_deg,rl,'Y') ! OR's photoproduction
-            stots=epc_func(E_BEAM,z1,0,'N','Y','PI0','Y',Ppp,TH_deg,rl,'Y') ! OR's electroproduction
-            xsnscal=(xsnscal+stots)*(zz_t+nn_t)
-
+            xsn=epc_func(E_BEAM,z1,0,'N','Y','PI0',photo_prod,Ppp,TH_deg,rl,'Y') 
+            xsn=xsn*(zz_t+nn_t)
+            if (photo_prod .eq. 'Y')  then
+               xsn_eprod = 0.
+               xsn_gprod = xsn
+               else
+               xsn_eprod = xsn
+               xsn_gprod = 0.
+               endif
             pp = sqrt(E**2-mass(ivpart)**2)
             th = tht_scat
             ph = phi_scat
             EE = abs(E)
-            
-c
-c
-c     Electron comp
-c
-c
-c
-
             Ef = abs(E)
             nu = E0 - Ef
             q2 = 2.d0*Ef*E0*(1-cos(tht_scat)   )
-!            write(*,*) 'pi0: ',Ef,E0,tht_scat*180/3.1415
-
             xb = q2 / 2.d0 / 0.938d0 / nu 
             wsq = 0.938d0**2 + 2.d0*0.938d0*nu - q2
-            SIN2 = SIN(tht_scat/2.)**2
-            COS2 = 1. - SIN2
-
-            xsnh2 = cross_section(1,0,u_vertex,1,f1,f2,q2,wsq,r)
-            SIGELECh2 = 5.18 / (E0)**2 / SIN2**2 *
-     >        (COS2 * f2 + 2. * SIN2 * f1)
-     >        * 2.*3.14159 * sin(tht_scat)
-            CALL INEFT(Q2,sqrt(wsq),W1,W2,14.D0)
-           SIGELEC = 5.18 / (E0)**2 / SIN2**2 *
-     >        (COS2 * W2 + 2. * SIN2 * W1)
-     >        * 2.*3.14159 * sin(tht_scat)
        if(xsn.le.0.0)goto 700
-       if(xsnscal.le.0.0)goto 700
-      goto 339
+       goto 339
       endif
-c
-c
-c     For not pi0 modify parameters in sane_accp
-c
 c
 c
 
