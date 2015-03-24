@@ -41,7 +41,7 @@ c
 
 5) Modified gen_evt.f, guout.f to remove comment block variable phi_test.
 
-6) Modified gukine.f, the vertex z was thorwn wrongly.
+6) Modified gukine.f, the vertex z was thrown wrongly.
 
 
 
