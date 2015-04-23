@@ -31,17 +31,31 @@ C
       integer ipos
 
       num_gc = 0
+      num_ftx1 = 0
+      num_fty2 = 0
       xsn=0.d0
       ratrad=0.d0
       normrate = 0.d0
       cwn_xsn = 0.d0
       cwn_xsnr = 0.d0
-      cwn_xsnscal = 0.d0
+      cwn_xsnepc = 0.d0
+      cwn_xsnwiser = 0.d0
 
       call vzero(gc_x,tot_gc)
       call vzero(gc_y,tot_gc)
       call vzero(gc_eng,tot_gc)
       call vzero(gc_part,tot_gc)
+
+      call vzero(fty2_x,tot_fty2)
+      call vzero(fty2_y,tot_fty2)
+      call vzero(fty2_eng,tot_fty2)
+      call vzero(fty2_part,tot_fty2)
+
+
+      call vzero(ftx1_x,tot_ftx1)
+      call vzero(ftx1_y,tot_ftx1)
+      call vzero(ftx1_eng,tot_ftx1)
+      call vzero(ftx1_part,tot_ftx1)
 
       call vzero(dEBloc,vert_blocks*horz_blocks*2)
       call vzero(photBloc,vert_blocks*horz_blocks*2)

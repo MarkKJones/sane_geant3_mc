@@ -84,6 +84,30 @@ C     ,lvolu m(nlevel),numed,ingoto,ipart
 *      endif
 
 *      IP = GKIN(5,)
+c
+c      if (lvolum(nlevel) .ne. 14) write(*,*) ' mkj = ',lvolum(nlevel),nlevel,inwvol,vol_ftx1,vol_fty2,vol_gain,ipart
+      if (lvolum(nlevel).eq.vol_fx1b.and.inwvol.eq.1) then ! entering forward tracker X1
+       if ((ipart.ge.1 .and. ipart.le.3) .and.getot.gt.0.020 .and.
+     2      vect(6).gt.0.5 ) then
+            num_ftx1 = num_ftx1 + 1
+            ftx1_x(num_gc) = vect(1)
+            ftx1_y(num_gc) = vect(2)
+            ftx1_eng(num_gc) = getot
+            ftx1_part(num_gc) = ipart
+        endif
+      endif
+c
+      if (lvolum(nlevel).eq.vol_fy2b.and.inwvol.eq.2) then ! leaving FTY2
+       if ((ipart.ge.1 .and. ipart.le.3) .and.getot.gt.0.020 .and.
+     2      vect(6).gt.0.5 ) then
+            num_fty2 = num_fty2 + 1
+            fty2_x(num_gc) = vect(1)
+            fty2_y(num_gc) = vect(2)
+            fty2_eng(num_gc) = getot
+            fty2_part(num_gc) = ipart
+        endif
+      endif
+c
 
       if (lvolum(nlevel).eq.vol_gain.and.inwvol.eq.1) then ! entering Gain Sheet
 c        write(*,*) 'entering Gain Sheet',ipart,vect,getot
@@ -108,10 +132,8 @@ c      write(*,*) 'volume =',lvolum(nlevel),destep
 c
 c     Check tracker and Lucite
 c
-!Jixie: I commented 'call step_tracker()' out to see if it runs faster
-!it turns out that this is not the reason        
-         call step_tracker()
-         call step_lucite()
+c         call step_tracker()
+c         call step_lucite()
        
       endif
 

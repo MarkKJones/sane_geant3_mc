@@ -19,6 +19,26 @@ C-- entering calorimeter.  All variables prefixed with cwn_p_
      2               cwn_p_ex(max_part),cwn_p_ey(max_part),cwn_p_ee(max_part),
      3               cwn_p_px(max_part),cwn_p_py(max_part),cwn_p_pe(max_part)
 
+      integer*4 cwn_ftx1_ng,cwn_ftx1_ne,cwn_ftx1_np     ! number of gammas, e-,e+ 
+      real*4 cwn_ftx1_gx,cwn_ftx1_gy,cwn_ftx1_ge        ! gamma x,y and energy
+      real*4 cwn_ftx1_ex,cwn_ftx1_ey,cwn_ftx1_ee        ! e- x,y and energy
+      real*4 cwn_ftx1_px,cwn_ftx1_py,cwn_ftx1_pe        ! e+ x,y and energy
+
+      COMMON /ftx1pa/cwn_ftx1_ng,cwn_ftx1_ne,cwn_ftx1_np,
+     1               cwn_ftx1_gx(max_part),cwn_ftx1_gy(max_part),cwn_ftx1_ge(max_part),
+     2               cwn_ftx1_ex(max_part),cwn_ftx1_ey(max_part),cwn_ftx1_ee(max_part),
+     3               cwn_ftx1_px(max_part),cwn_ftx1_py(max_part),cwn_ftx1_pe(max_part)
+
+      integer*4 cwn_fty2_ng,cwn_fty2_ne,cwn_fty2_np     ! number of gammas, e-,e+ 
+      real*4 cwn_fty2_gx,cwn_fty2_gy,cwn_fty2_ge        ! gamma x,y and energy
+      real*4 cwn_fty2_ex,cwn_fty2_ey,cwn_fty2_ee        ! e- x,y and energy
+      real*4 cwn_fty2_px,cwn_fty2_py,cwn_fty2_pe        ! e+ x,y and energy
+
+      COMMON /fty2pa/cwn_fty2_ng,cwn_fty2_ne,cwn_fty2_np,
+     1               cwn_fty2_gx(max_part),cwn_fty2_gy(max_part),cwn_fty2_ge(max_part),
+     2               cwn_fty2_ex(max_part),cwn_fty2_ey(max_part),cwn_fty2_ee(max_part),
+     3               cwn_fty2_px(max_part),cwn_fty2_py(max_part),cwn_fty2_pe(max_part)
+
 
 C-- Variables related to the thrown particle
 
@@ -26,9 +46,8 @@ C-- Variables related to the thrown particle
       real*4 cwn_p       ! momentum
       real*4 cwn_xsn     ! cross section
       real*4 cwn_xsnr     ! radiated cross section
-      real*4 cwn_xsnscal     ! Oscar pi0 scaling cross section
-      real*4 cwn_xsngp     ! pi0 photo-producion
-      real*4 cwn_xsnep     ! pi0 electroprod
+      real*4 cwn_xsnepc     ! Oscar pi0 scaling cross section
+      real*4 cwn_xsnwiser     ! pi0 photo-producion
       real*4 cwn_stopvol    ! volume number where track stopped
       real*4 cwn_th      ! polar angle w.r.t. beam
       real*4 cwn_ph      ! azimuthal angle w.r.t. beam
@@ -44,8 +63,8 @@ CC      real*4 F1tot   ! F1
 CC      real*4 Rtot    ! R=sigma_L/sigma_T 
       
 
-      COMMON /thrown/cwn_E,cwn_p,cwn_xsn,cwn_xsnr,cwn_xsngp,
-     1               cwn_xsnep,cwn_stopvol,cwn_th,cwn_ph,cwn_u(6),
+      COMMON /thrown/cwn_E,cwn_p,cwn_xsn,cwn_xsnr,cwn_xsnepc,
+     1               cwn_xsnwiser,cwn_stopvol,cwn_th,cwn_ph,cwn_u(6),
      1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate,cwn_dedl(6)
 CC     1               cwn_part,cwn_z,cwn_n,SRx,SRy,normrate,F1tot,Rtot
 

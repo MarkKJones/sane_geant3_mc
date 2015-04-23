@@ -847,7 +847,7 @@ C  TWO PION THR
           ELSE
              CALL WISER(W/1.E3,P/1.E3,TH,F)
           END IF
-!	  PRINT *,'P,W,GN,F',P,W,GN,F
+c	  write(*,*) 'P,W,GN,F',P,W,GN,F
           SUM=SUM+GN*F*DW 
 	  SUMBR = SUMBR + F*DW/W
 c             write(*,*) ' scal fit = ',P,TH,F,sumbr
@@ -1086,9 +1086,9 @@ C  ENERGY
         REAL*8 P,TH,F
 c  P is momentum in GeV/c
 c  Th is angle in radians
-c  F is photo production cross section = E d^3sigma/d^3p microbarns/sr/(GeV/c)(c/Q)  Q=equivalent quanta
+c  F is photo production cross section = E d^3sigma/d^3p microbarns/sr/(GeV/c)^2 (c/Q)  Q=equivalent quanta
 c        F = 9577*EXP(-8.759*P*SIN(TH))  !for pi-
-c        F = 11289*EXP(-8.536*P*SIN(TH)) !for pi+
+c         F = 11289*EXP(-8.536*P*SIN(TH))/12. !for pi+
         F = 10219*EXP(-8.675*P*SIN(TH))/12.  !for pi0 on 12C divied by 12 for per nucleon cross section
 c        PRINT *, 'P,TH,F',P,TH,p*sin(th),F
         RETURN

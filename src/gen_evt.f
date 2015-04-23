@@ -41,6 +41,7 @@
       real*8 stots,sdelta,spion
       real*8 epc_func,z1,n1,ppp
       real p1,p2,p3,th_d,radh2,xsnh2
+      real*8 sigma_piplus,sigma_piminus
       character*1 photo_prod
 
 C Now cycle through events
@@ -50,14 +51,6 @@ c      write(*,*) 'E_beam',E_beam,'ebeam2 = ',ebeam2,' part = ',part
       flg = 0
       endif
 c     
-c  random choose either electro or photo production for pi0 
-      if (part .eq. 5 .and. rand() .lt. 0.5) then
-         photo_prod='Y'
-         else
-         photo_prod='N'
-         endif
-               xsn_eprod = 0.
-               xsn_gprod = 0.
 c      
  700  continue
 
@@ -85,24 +78,24 @@ c      write(*,*)tgt,z(tgt),n(tgt)
             ivpart=5
             call generate_event(u_vertex,E,ivpart,tht_scat,phi_scat
      +           ,deltaomega_scat,deltaE_scat)
-            rl_int = 2.*(1./137.)*(1./3.14159)*log(E_beam/.511)
-            rl_ext = 4./3.*(0.0464/2.)
-            rl= (rl_ext+rl_int)*100 ! epc_func needs %
+            rl_int = 2.*(1./137.)*(1./3.14159)*log(E_beam/.511)*100.
+            rl_ext = (0.0464/2.)*100.
+            rl= (rl_ext+rl_int) ! for wiser
             th_deg=tht_scat*180./3.14159
             pp = sqrt(E**2-mass(ivpart)**2)
             ppp=pp*1000
 
             z1=1
             n1=0
-            xsn=epc_func(E_BEAM,z1,0,'N','Y','PI0',photo_prod,Ppp,TH_deg,rl,'Y') 
-            xsn=xsn*(zz_t+nn_t)
-            if (photo_prod .eq. 'Y')  then
-               xsn_eprod = 0.
-               xsn_gprod = xsn
-               else
-               xsn_eprod = xsn
-               xsn_gprod = 0.
-               endif
+            photo_prod='Y'
+c
+            xsn_epc=epc_func(e_beam,z1,0,'N','Y','PI0',photo_prod,Ppp,TH_deg,rl_ext,'Y') 
+            photo_prod='N'
+            xsn_epc=xsn_epc+epc_func(e_beam,z1,0,'N','Y','PI0',photo_prod,Ppp,TH_deg,rl_ext,'Y')
+            xsn=xsn_epc*(zz_t+nn_t)
+            call WISER_ALL_SIG(e_beam,ppp,TH_DEG,rl,1,SIGMA_piplus)
+            call WISER_ALL_SIG(e_beam,ppp,TH_DEG,rl,2,SIGMA_piminus)
+            xsn_wiser=((SIGMA_piplus+SIGma_piminus)/2.)*((zz_t+nn_t)**(0.9)) ! ub/GeV/sr
             pp = sqrt(E**2-mass(ivpart)**2)
             th = tht_scat
             ph = phi_scat

@@ -58,8 +58,8 @@ c     ,     //'ixmax[1,32]:I,iymax[1,56]:I,eyx(5,5):R')
      1          //',p:R'
      1          //',xsn:R'
      1          //',ratrad:R'
-     1          //',xsngp:R'
-     1          //',xsnep:R'
+     1          //',xsnepc:R'
+     1          //',xsnwiser:R'
      1          //',stopvol:R'
      1          //',tht:R'
      1          //',phi:R'
@@ -118,6 +118,36 @@ c$$$     1          //',Rtot:R'
      1  //',p_px(p_np):R'
      1  //',p_py(p_np):R'
      1  //',p_pe(p_np):R'
+     1  )
+
+      call hbname(nt_geant,'FTX1PA',cwn_ftx1_ng,
+     1  'ftx1_ng[0,20]:I'
+     1  //',ftx1_ne[0,20]:I'
+     1  //',ftx1_np[0,20]:I'
+     1  //',ftx1_gx(ftx1_ng):R'
+     1  //',ftx1_gy(ftx1_ng):R'
+     1  //',ftx1_ge(ftx1_ng):R'
+     1  //',ftx1_ex(ftx1_ne):R'
+     1  //',ftx1_ey(ftx1_ne):R'
+     1  //',ftx1_ee(ftx1_ne):R'
+     1  //',ftx1_px(ftx1_np):R'
+     1  //',ftx1_py(ftx1_np):R'
+     1  //',ftx1_pe(ftx1_np):R'
+     1  )
+
+      call hbname(nt_geant,'FTY2PA',cwn_fty2_ng,
+     1  'fty2_ng[0,20]:I'
+     1  //',fty2_ne[0,20]:I'
+     1  //',fty2_np[0,20]:I'
+     1  //',fty2_gx(fty2_ng):R'
+     1  //',fty2_gy(fty2_ng):R'
+     1  //',fty2_ge(fty2_ng):R'
+     1  //',fty2_ex(fty2_ne):R'
+     1  //',fty2_ey(fty2_ne):R'
+     1  //',fty2_ee(fty2_ne):R'
+     1  //',fty2_px(fty2_np):R'
+     1  //',fty2_py(fty2_np):R'
+     1  //',fty2_pe(fty2_np):R'
      1  )
 
       if ( 1 .eq. -1) then
