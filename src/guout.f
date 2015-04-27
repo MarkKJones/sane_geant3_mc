@@ -88,6 +88,50 @@ c           write(*,*)gc_x(i),gc_y(i),gc_eng(i),cwn_p_ne
           cwn_p_ee(cwn_p_ne) = gc_eng(i)
         endif
       enddo
+c
+      cwn_ftx1_ne =0
+      cwn_ftx1_ng =0
+      cwn_ftx1_np =0
+      do i=1,num_ftx1
+        if (ftx1_part(i).eq.1) then
+          cwn_ftx1_ng = cwn_ftx1_ng + 1
+          cwn_ftx1_gx(cwn_ftx1_ng) = ftx1_x(i)
+          cwn_ftx1_gy(cwn_ftx1_ng) = ftx1_y(i)
+          cwn_ftx1_ge(cwn_ftx1_ng) = ftx1_eng(i)
+        elseif (ftx1_part(i).eq.2) then
+          cwn_ftx1_np = cwn_ftx1_np + 1
+          cwn_ftx1_px(cwn_ftx1_np) = ftx1_x(i)
+          cwn_ftx1_py(cwn_ftx1_np) = ftx1_y(i)
+          cwn_ftx1_pe(cwn_ftx1_np) = ftx1_eng(i)
+        elseif (ftx1_part(i).eq.3) then
+          cwn_ftx1_ne = cwn_ftx1_ne + 1
+          cwn_ftx1_ex(cwn_ftx1_ne) = ftx1_x(i)
+          cwn_ftx1_ey(cwn_ftx1_ne) = ftx1_y(i)
+          cwn_ftx1_ee(cwn_ftx1_ne) = ftx1_eng(i)
+        endif
+      enddo
+c
+      cwn_fty2_ne =0
+      cwn_fty2_ng =0
+      cwn_fty2_np =0
+      do i=1,num_fty2
+        if (fty2_part(i).eq.1) then
+          cwn_fty2_ng = cwn_fty2_ng + 1
+          cwn_fty2_gx(cwn_fty2_ng) = fty2_x(i)
+          cwn_fty2_gy(cwn_fty2_ng) = fty2_y(i)
+          cwn_fty2_ge(cwn_fty2_ng) = fty2_eng(i)
+        elseif (fty2_part(i).eq.2) then
+          cwn_fty2_np = cwn_fty2_np + 1
+          cwn_fty2_px(cwn_fty2_np) = fty2_x(i)
+          cwn_fty2_py(cwn_fty2_np) = fty2_y(i)
+          cwn_fty2_pe(cwn_fty2_np) = fty2_eng(i)
+        elseif (fty2_part(i).eq.3) then
+          cwn_fty2_ne = cwn_fty2_ne + 1
+          cwn_fty2_ex(cwn_fty2_ne) = fty2_x(i)
+          cwn_fty2_ey(cwn_fty2_ne) = fty2_y(i)
+          cwn_fty2_ee(cwn_fty2_ne) = fty2_eng(i)
+        endif
+      enddo
 
 c      write(*,*)'part=',part
       cwn_E    = EE
@@ -97,9 +141,8 @@ c      write(*,*)z(tgt_num),n(tgt_num)
       cwn_z    = z(tgt_num)
       cwn_n    = n(tgt_num)
       cwn_xsn  = xsn
-      cwn_xsnscal=xsnscal
-      cwn_xsngp=xsn_gprod
-      cwn_xsnep=xsn_eprod
+      cwn_xsnepc=xsn_epc
+      cwn_xsnwiser=xsn_wiser
       if(ratrad.eq.ratrad)then
          cwn_xsnr  = ratrad
       else

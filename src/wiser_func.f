@@ -125,16 +125,16 @@ C Xiaochao Zheng, this subroutine added July 07, 2000
 !------------------------------------------------------------------------------
 ! Calculate pi,K,p  cross section for electron beam on a proton target
 ! IntegrateQs over function WISER_FIT using integration routine QUADMO
-! E0         is electron beam energy, OR max of Brem spectra
-! P,E       is scattered particle  momentum,energy
-! THETA_DEG  is kaon angle in degrees
+! E0         is electron beam energy, OR max of Brem spectra ( Mev)
+! P,E       is scattered particle  momentum,energy (MeV)
+! THETA_DEG  is scattered particle angle in degrees
 ! RAD_LEN (%)is the radiation length of target, including internal
 !                (typically 5%)
 !               = .5 *(target radiation length in %) +5.
 !       ***  =100. IF BREMSTRULUNG PHOTON BEAM OF 1 EQUIVIVENT QUANTA
 ***
 ! TYPE:     1 for pi+;  2 for pi-, 3=k+, 4=k-, 5=p, 6=p-bar
-! SIGMA      is output cross section in nanobars/GeV-str
+! SIGMA      is output cross section in ubars/GeV-str
 !------------------------------------------------------------------------------
 
       IMPLICIT NONE       
@@ -149,7 +149,7 @@ C Xiaochao Zheng, this subroutine added July 07, 2000
       REAL*8 MASS2(3)/.019488, .2437, .8804/
       REAL*8 MASS(3)/.1396, .4973, .9383/ 
       REAL*8 MP/.9383/,  MP2/.8804/, RADDEG/.0174533/
-      REAL*8  M_L,SIG_E
+      REAL*8  M_L,SIG_E,temp
       REAL*8 E_GAMMA_MIN,WISER_ALL_FIT,QUADMO,E08,EPSILON/.003/
       EXTERNAL WISER_ALL_FIT                        
       INTEGER N,CHARGE
@@ -206,9 +206,7 @@ c         write(*,*)'S10 ',SIG_E
 c         write(*,*)'S1E ',SIG_E
          ENDIF
          if(SIG_E.lt.0)SIG_E=0
-         SIGMA = P**2/E * 1000. * RAD_LEN/100. *SIG_E 
-c         SIGMA = P**2/E * 1000. * 1./100. *SIG_E 
-c         write(*,*)'Wiser',SIG_E ,P**2/E *SIG_E,P**2/E,Sigma
+         SIGMA = P**2/E * RAD_LEN/100. *SIG_E 
       ELSE                      ! Kinematically forbidden
          SIGMA = 0.
       ENDIF
@@ -250,9 +248,8 @@ c      write(*,*)sigma
       REAL*8 MP2/.8804/,MP/.9383/
       REAL*8 X_R,S,B_CM, GAM_CM,  P_CM
       REAL*8 P_CM_MAX, P_CM_L
-      REAL*8 E_GAMMA
+      REAL*8 E_GAMMA,M_L,temp
                                             
-
 !Mandlestam variables                                                
       S = MP2 + 2.* E_GAMMA * MP    
 
@@ -277,7 +274,9 @@ c      write(*,*)sigma
      >   (1. -X_R + A3(TYPE)**2/S)**A4(TYPE)          /
      >   (1.+U_MAN)**(A6+A7*S) )/E_GAMMA  
        ENDIF
-      
+         M_L = SQRT(P_T**2 + MASS2(PARTICLE))    
+         temp=EXP(-5.49 *M_L) *EXP(-1.73 *P_T**2/E)
+c       write(*,*) ' WISER_ALL_FIT = ' ,WISER_ALL_FIT*E_GAMMA,temp
       RETURN
       END
 
