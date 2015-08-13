@@ -1,3 +1,24 @@
+By Jixie, Aug 2015
+Updated epc_or.f to use Oscar's FINAL scaling fit.
+It was done long time ago, but I forgot to commit to the remote github. 
+
+problem:
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+LOCB/LOCF: address 0x3554908a80 exceeds the 32 bit address space
+or is not in the data segments                                 
+This may result in program crash or incorrect results          
+Therefore we will stop here                                    
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
+
+Here are the 3 things Stephen Wood did to fix the above problem.
+
+1.  Makefile_64: Use the CERN_ROOT environment variable to reference the libraries and include files. I removed the -m64 flag, so this makefile may also work on a 32 bit machine.
+
+2.  gxcs.f: Added a missing "EXTERNAL GBRSGE".  Without that external, the second to last CSEXT was crashing.
+
+3.  uginit.f: Put the address argument of every FFKEY call into a common block.
+
+
 By Jixie, Dec 2014
 
 1) Modified  generate_event() subroutine in gen_evt.f. 
