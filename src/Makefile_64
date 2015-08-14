@@ -3,8 +3,7 @@ F77 = gfortran
 FC = gfortran
 
 #FFLAGS = -g -m64 -ffixed-line-length-132 -finit-local-zero
-FFLAGS = -O  -m64 -ffixed-line-length-none 
-#-malign-double -fno-automatic 
+FFLAGS = -O  -m64 -ffixed-line-length-none -malign-double -fno-automatic 
 #FFLAGS = -O  -m64 -ffixed-line-length-none -finit-local-zero -malign-double
 LDFLAGS =  -m64 -Wl,-E -L/apps/cernlib/x86_64_rhel6/2005/lib -lgeant321 -lpawlib -lgraflib \
      -lgrafX11 -lpacklib -lmathlib -llapack -lblas -L/usr/X11R6/lib \

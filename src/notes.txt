@@ -10,13 +10,10 @@ This may result in program crash or incorrect results
 Therefore we will stop here                                    
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
 
-Here are the 3 things Stephen Wood did to fix the above problem.
+Here are the 2 things Stephen Wood did to fix the above problem.
+1.  gxcs.f: Added a missing "EXTERNAL GBRSGE".  Without that external, the second to last CSEXT was crashing.
 
-1.  Makefile_64: Use the CERN_ROOT environment variable to reference the libraries and include files. I removed the -m64 flag, so this makefile may also work on a 32 bit machine.
-
-2.  gxcs.f: Added a missing "EXTERNAL GBRSGE".  Without that external, the second to last CSEXT was crashing.
-
-3.  uginit.f: Put the address argument of every FFKEY call into a common block.
+2.  uginit.f: Put the address argument of every FFKEY call into a common block.
 
 
 By Jixie, Dec 2014
