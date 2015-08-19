@@ -1,3 +1,21 @@
+By Jixie, Aug 2015
+Updated epc_or.f to use Oscar's FINAL scaling fit.
+It was done long time ago, but I forgot to commit to the remote github. 
+
+problem:
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+LOCB/LOCF: address 0x3554908a80 exceeds the 32 bit address space
+or is not in the data segments                                 
+This may result in program crash or incorrect results          
+Therefore we will stop here                                    
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
+
+Here are the 2 things Stephen Wood did to fix the above problem.
+1.  gxcs.f: Added a missing "EXTERNAL GBRSGE".  Without that external, the second to last CSEXT was crashing.
+
+2.  uginit.f: Put the address argument of every FFKEY call into a common block.
+
+
 By Jixie, Dec 2014
 
 1) Modified  generate_event() subroutine in gen_evt.f. 
@@ -41,7 +59,7 @@ c
 
 5) Modified gen_evt.f, guout.f to remove comment block variable phi_test.
 
-6) Modified gukine.f, the vertex z was thorwn wrongly.
+6) Modified gukine.f, the vertex z was thrown wrongly.
 
 
 

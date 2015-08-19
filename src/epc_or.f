@@ -843,7 +843,7 @@ C  TWO PION THR
 !	  WRITE(*,100) I,AM,AMP,E1,W,DW,THR,GN
 100	FORMAT(I4,2F8.1,5G12.3)
           IF (USEFIT.EQ.'Y')THEN
-             CALL SCALINGFIT(P/1.E3,TH,F) ! F is cross section
+             CALL SCALINGFIT(0,P/1.E3,TH,F) ! F is cross section
           ELSE
              CALL WISER(W/1.E3,P/1.E3,TH,F)
           END IF
@@ -1082,14 +1082,44 @@ C  ENERGY
 ! https://userweb.jlab.org/~rondon/analysis/pairs/scalfit-photo.pdf for pi+/pi-
 ! https://userweb.jlab.org/~rondon/analysis/pairs/scal-fit.pdf for pi0
 ! https://hallcweb.jlab.org/experiments/sane/wiki/index.php/Inclusive_pion_and_nucleon_electroproduction
-	SUBROUTINE SCALINGFIT(P,TH,F)
+
+
+!  This is Oscar's latest fit result, Fit to sigma = a*exp(C*pT), where pT is transeverse momentum
+!
+!Data       Tool       Particle   Unweighted             Weighted                                    chI^2/dof   Weight   
+!                                      a          C          a         da          C         dC                
+!Digitized  PSIplot    pi+           12132      -8.59      11289       565      -8.536      0.091     125/24   stat+.1syst
+!                      pi-           10127      -8.79      9577        469      -8.759      0.092     111/24   stat+.1syst
+!                      pi0           11146      -8.68      10219       361      -8.675      0.065     225/24   stat+.1syst
+!                                                                                                              
+!                                                                                                              
+!           QPro       pi+           12150      -8.59                                                                     
+!                      pi-           10110      -8.78                                                          
+!                      pi0           11150      -8.67                                                          
+!                                                                                                              
+!                                                                                                              
+!Published  PSIplot    pi+           11430     -8.653      9129        412      -8.361      0.092     128/24   stat+.1syst
+!                      pi-           10031     -8.788      7976        427      -8.467      0.113      93/24   stat+.1syst
+!                      pi0           10622      -8.74      8453        281      -8.439      0.068     253/24   stat+.1syst
+!
+
+	SUBROUTINE SCALINGFIT(PART,P,TH,F)
+        INTEGER PART
         REAL*8 P,TH,F
+c  PART is used to tell what particle it is: 1 for pi+, 0 for pi0, -1 for pi-
 c  P is momentum in GeV/c
 c  Th is angle in radians
 c  F is photo production cross section = E d^3sigma/d^3p microbarns/sr/(GeV/c)^2 (c/Q)  Q=equivalent quanta
-c        F = 9577*EXP(-8.759*P*SIN(TH))  !for pi-
-c         F = 11289*EXP(-8.536*P*SIN(TH))/12. !for pi+
-        F = 10219*EXP(-8.675*P*SIN(TH))/12.  !for pi0 on 12C divied by 12 for per nucleon cross section
+c    Using Oscar's on 12C divied by 12 for per nucleon cross section
+        
+	IF(PART.EQ.1) THEN
+           F = 9129*EXP(-8.361*P*SIN(TH))/12. !for pi+
+	ELSE IF (PART.EQ.-1) THEN
+           F = 7976*EXP(-8.467*P*SIN(TH))/12. !for pi- 
+        ELSE
+           F = 8453*EXP(-8.439*P*SIN(TH))/12. !for pi0
+	END IF
 c        PRINT *, 'P,TH,F',P,TH,p*sin(th),F
+
         RETURN
         END

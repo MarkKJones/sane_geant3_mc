@@ -21,6 +21,14 @@
       integer ifirst
       external gudigi
       integer ifield_init,i
+C
+C (saw) Put FFKEY arguments in common block so that
+C CHKLOC doesn't give LOCB/LOCF error
+C
+      common /common_for_tmp/ thte_tmp, thtb_tmp, ebeam_tmp, hyddens_tmp,
+     $     heldens_tmp, nitdens_tmp, effdens_tmp, pckfrc_tmp,
+     $     cdiscoff_tmp, targzoff_tmp, rastoff
+
 C added by OR to read from a1p.dat like theta, theta B, etc.
       
 C
